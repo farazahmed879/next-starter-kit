@@ -73,26 +73,20 @@ export default function SignUp({}: {}) {
   const router = useRouter();
 
   type Inputs = {
-    example: string;
-    exampleRequired: string;
+    name: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+    file: string;
   };
 
-  // const handleSubmit = (event: any) => {
-  //   if (!validateInputs()) return;
-
-  //   debugger;
-  //   if (nameError || emailError || passwordError) {
-  //     event.preventDefault();
-  //     return;
-  //   }
-  //   const data = new FormData(event.currentTarget);
-  //   console.log({
-  //     name: data.get("name"),
-  //     lastName: data.get("lastName"),
-  //     email: data.get("email"),
-  //     password: data.get("password"),
-  //   });
-  // };
+  const defaultValues: Inputs = {
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    file: "",
+  };
 
   React.useEffect(() => {
     if (sessionStatus === "authenticated") {
@@ -106,7 +100,7 @@ export default function SignUp({}: {}) {
     register,
     handleSubmit,
     watch,
-  } = useForm<Inputs>();
+  } = useForm<Inputs>({ defaultValues });
 
   const onSubmit: SubmitHandler<Inputs> = async (data: any) => {
     console.log("onSubmit", data);

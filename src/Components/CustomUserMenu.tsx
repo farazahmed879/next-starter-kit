@@ -12,14 +12,19 @@ import Logout from "@mui/icons-material/Logout";
 import { useSession, signOut } from "next-auth/react";
 import { jwtDecode } from "jwt-decode";
 
-export default function AccountMenu({ logout }: { logout: () => void }) {
+export default function AccountMenu({
+  handleLogout,
+}: {
+  handleLogout: () => void;
+}) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const { data: session } = useSession();
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
-  const handleClose = () => {
+  const handleClose = (ev = "") => {
+    if (ev == "logout") handleLogout();
     setAnchorEl(null);
   };
 
@@ -48,8 +53,8 @@ export default function AccountMenu({ logout }: { logout: () => void }) {
         anchorEl={anchorEl}
         id="account-menu"
         open={open}
-        onClose={handleClose}
-        onClick={handleClose}
+        onClose={() => handleClose()}
+        onClick={() => handleClose()}
         slotProps={{
           paper: {
             elevation: 0,
@@ -81,7 +86,7 @@ export default function AccountMenu({ logout }: { logout: () => void }) {
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={() => handleClose()}>
           <Avatar />{" "}
           <div>
             {decodedToken?.email}
@@ -99,15 +104,15 @@ export default function AccountMenu({ logout }: { logout: () => void }) {
           </ListItemIcon>
           Add another account
         </MenuItem> */}
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={() => handleClose()}>
           <ListItemIcon>
             <Settings fontSize="small" />
           </ListItemIcon>
           Settings
         </MenuItem>
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={() => handleClose("logout")}>
           <ListItemIcon>
-            <Logout fontSize="small" onClick={logout} />
+            <Logout fontSize="small" />
           </ListItemIcon>
           Logout
         </MenuItem>

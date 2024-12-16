@@ -61,8 +61,8 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
 }));
 
 type Inputs = {
-  example: string;
-  exampleRequired: string;
+  email: string;
+  password: string;
 };
 
 export default function SignIn({}: {}) {
@@ -71,13 +71,18 @@ export default function SignIn({}: {}) {
   const [isLoading, setIsloading] = React.useState<boolean>();
   const router = useRouter();
 
+  const defaultValues: Inputs = {
+    email: "",
+    password: "",
+  };
+
   const {
     control,
     formState: { errors },
     register,
     handleSubmit,
     watch,
-  } = useForm<Inputs>();
+  } = useForm<Inputs>({ defaultValues });
 
   const onSubmit: SubmitHandler<Inputs> = async (form: any) => {
     setIsloading(true);

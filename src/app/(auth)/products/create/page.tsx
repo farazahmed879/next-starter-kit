@@ -15,13 +15,19 @@ export default function ProductForm() {
     file: String;
   };
 
+  const defaultValues: Inputs = {
+    name: "",
+    description: "",
+    file: "",
+  };
+
   const {
     control,
     formState: { errors },
     register,
     handleSubmit,
     watch,
-  } = useForm<Inputs>();
+  } = useForm<Inputs>({ defaultValues });
 
   const submitProductData = async (data: Inputs) => {
     try {

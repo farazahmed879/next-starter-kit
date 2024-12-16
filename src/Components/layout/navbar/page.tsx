@@ -90,7 +90,8 @@ const Navbar: React.FC<NavbarProps> = ({
     setOpenState(true);
   };
 
-  const logout = () => {
+  const handleLogout = () => {
+    console.log("logout")
     signOut();
   };
 
@@ -125,7 +126,7 @@ const Navbar: React.FC<NavbarProps> = ({
               inputProps={{ "aria-label": "search" }}
             />
           </Search>
-          <AccountMenu logout={logout} />
+          <AccountMenu handleLogout={handleLogout} />
         </div>
       </Toolbar>
     </AppBar>
