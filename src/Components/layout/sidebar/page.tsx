@@ -118,34 +118,34 @@ const Sidebar: React.FC<SidebarProps> = ({
         <List>
           {items.map((text: string) => (
             <ListItem key={text} disablePadding sx={{ display: "block" }}>
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: openState ? "initial" : "center",
-                  px: 2.5,
-                  transition: "opacity 0.3s ease-in-out",
-                }}
-              >
-                <ListItemIcon
+              <Link href={routes[text]} passHref>
+                <ListItemButton
                   sx={{
-                    minWidth: 0,
-                    justifyContent: openState ? "flex-start" : "center",
-                    marginRight: openState ? 3 : 0,
+                    minHeight: 48,
+                    justifyContent: openState ? "initial" : "center",
+                    px: 2.5,
                     transition: "opacity 0.3s ease-in-out",
                   }}
                 >
-                  <Link href={routes[text]} passHref>
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      justifyContent: openState ? "flex-start" : "center",
+                      marginRight: openState ? 3 : 0,
+                      transition: "opacity 0.3s ease-in-out",
+                    }}
+                  >
                     {icons[text]}
-                  </Link>
-                </ListItemIcon>
-                <ListItemText
-                  primary={text.charAt(0).toUpperCase() + text.slice(1)}
-                  sx={{
-                    opacity: openState ? 1 : 0,
-                    transition: "opacity 0.3s ease-in-out",
-                  }}
-                />
-              </ListItemButton>
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={text.charAt(0).toUpperCase() + text.slice(1)}
+                    sx={{
+                      opacity: openState ? 1 : 0,
+                      transition: "opacity 0.3s ease-in-out",
+                    }}
+                  />
+                </ListItemButton>
+              </Link>
             </ListItem>
           ))}
         </List>

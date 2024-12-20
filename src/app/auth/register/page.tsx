@@ -17,7 +17,7 @@ import Grid from "@mui/material/Grid2";
 import CustomButton from "@/Components/CustomButton";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { ApiCall, SweetAlert } from "@/helper/helper";
+import { apiCall, SweetAlert } from "@/helper/helper";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
@@ -115,7 +115,7 @@ export default function SignUp({}: {}) {
       };
 
       setIsloading(true);
-      const response = await ApiCall(
+      const response = await apiCall(
         "http://localhost:8080/users",
         "post",
         reqData

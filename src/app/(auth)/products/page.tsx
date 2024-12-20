@@ -1,13 +1,12 @@
 "use client";
 import CustomButton from "@/Components/CustomButton";
-import CustomGrid from "@/Components/CustomGrid";
-import { Column } from "@/helper/interface";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { Box, Typography } from "@mui/material";
 import CustomLoader from "@/Components/CustomLoader";
-import { ApiCall, SweetAlert } from "@/helper/helper";
+import { apiCall, baseUrl, getMethod, getMethodAxio, SweetAlert } from "@/helper/helper";
+import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
+import CustomIcon from "@/Components/CustomIcon";
 
 const Product: React.FC = () => {
   const [page, setPage] = React.useState(0);
@@ -16,7 +15,27 @@ const Product: React.FC = () => {
   const [filter, setFilter] = React.useState("");
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
-  const handleEdit = () => {};
+  const handleDelete = async (rowData: any) => {
+    const result = await SweetAlert(
+      "Are you sure?",
+      "error",
+      "You won't be able to revert this!",
+      true,
+      "Yes",
+      "No"
+    );
+
+    if (!result.isConfirmed) return;
+    const url = `http://localhost:8080/product/${rowData._id}`;
+    const response = await apiCall(url, "delete");
+
+    if (response && response.status === 201) {
+      SweetAlert("Product Deleted", "success", "", false, "OK");
+      getProducts();
+    } else {
+      SweetAlert("Failed to Delete", "error", "", false, "OK");
+    }
+  };
 
   const router = useRouter();
 
@@ -24,26 +43,38 @@ const Product: React.FC = () => {
     router.replace("/products/create");
   };
 
-  const columns: readonly Column[] = [
-    { id: "name", label: "Name", minWidth: 170 },
-    { id: "description", label: "Description", minWidth: 170 },
-    { id: "file", label: "File", minWidth: 170 },
-    // {
-    //   id: "action",
-    //   label: "Action",
-    //   minWidth: 150,
-    //   renderCell: (params: any) => {
-    //     return (
-    //       <CustomButton
-    //         variant="contained"
-    //         color="primary"
-    //         size="small"
-    //         handleClick={handleEdit}
-    //         text="Click here"
-    //       />
-    //     );
-    //   },
-    // },
+  const columns: GridColDef[] = [
+    { field: "name", headerName: "Name", minWidth: 400 },
+    { field: "description", headerName: "Description", minWidth: 400 },
+    { field: "file", headerName: "File", minWidth: 300 },
+    {
+      field: "action",
+      headerName: "Action",
+      minWidth: 250,
+      renderCell: (params: GridRenderCellParams) => {
+        return (
+          <div
+            style={{ display: "flex", alignItems: "center", height: "100%" }}
+          >
+            <CustomIcon
+              name="Delete"
+              color="error"
+              hover
+              onClick={() => handleDelete(params.row)}
+            />
+
+            <CustomIcon
+              name="ModeEdit"
+              color="primary"
+              hover
+              onClick={() =>
+                router.push(`/products/create?id=${params.row._id}`)
+              }
+            />
+          </div>
+        );
+      },
+    },
   ];
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -57,17 +88,22 @@ const Product: React.FC = () => {
     setPage(0);
   };
 
-  const getProducts = async (a: any) => {
+  const getProducts = async (a?: any) => {
     try {
       setIsLoading(true);
-      let url = "http://localhost:8080/product";
-      if (a) url += `?key=${a}`;
-      const data = await ApiCall(url, "get");
+      // let url = "http://localhost:8080/product";
+      // if (a) url += `?key=${a}`;
+      // const data = await apiCall(url, "get");
+
+    //  const data = await getMethod(`${baseUrl}/product` )
+
+    const { status, data, error, message } = await getMethodAxio(`${baseUrl}/product`);
+
       setIsLoading(false);
       if (data) return setData(data?.data.data);
-      SweetAlert("Error", "error", "Something went wrong");
+      SweetAlert(`${error}`, `error`, "Something went wrong");
     } catch (error) {
-      SweetAlert("Error", "error", "Something went wrong");
+      SweetAlert("Error", "error", `Something went wrong`);
     }
   };
 
@@ -92,7 +128,7 @@ const Product: React.FC = () => {
           justifyContent: "space-between",
         }}
       >
-        <Typography>Products</Typography>
+        <h2>Products</h2>
         <CustomButton
           variant="outlined"
           text="Add Product "
@@ -102,17 +138,9 @@ const Product: React.FC = () => {
       </Box>
 
       <Box sx={{ marginTop: 1 }}>
-        <CustomGrid
-          handleChangePage={handleChangePage}
-          handleChangeRowsPerPage={handleChangeRowsPerPage}
-          page={page}
-          rowsPerPage={rowsPerPage}
-          columns={columns}
-          data={data}
-        />
+        <DataGrid rows={data} columns={columns} getRowId={(row) => row._id} />
       </Box>
     </div>
-    // </DashboardLayoutBasic>
   );
 };
 

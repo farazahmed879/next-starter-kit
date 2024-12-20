@@ -3,6 +3,10 @@ import CustomButton from "@/Components/CustomButton";
 import CustomInput from "@/Components/CustomInput";
 import { Grid2 } from "@mui/material";
 import { useForm } from "react-hook-form";
+import { SweetAlert, apiCall, baseUrl, postMethod } from "@/helper/helper";
+import Link from "next/link";
+import CustomIcon from "@/Components/CustomIcon";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function Users() {
   type Inputs = {
@@ -13,35 +17,68 @@ export default function Users() {
     file: string;
   };
 
+
+
+
+  const defaultValues = {
+    name: "",
+    email: "",
+    role: "",
+    password: "",
+  };
+
+  const router = useRouter();
   const {
     control,
     formState: { errors },
     register,
     handleSubmit,
     watch,
-  } = useForm<Inputs>();
+  } = useForm<Inputs>({ defaultValues });
 
   const createNewUser = async (data: Inputs) => {
     try {
-      const response = await fetch("http://localhost:8080/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      let url = "http://localhost:8080/users";
+      const payload = {
+        name: data.name,
+        password: data.password,
+        email: data.email,
+        role: data.role,
+      };
 
-      if (response.ok) {
-        alert("New user created!");
+      console.log("Payload being sent:", payload);
+
+
+
+      const response = await postMethod(`${baseUrl}/users`,payload)
+
+      if (response && response.status === 201 || response.status === 200) {
+        const result = await SweetAlert(
+          "User Created",
+          "success",
+          "",
+          false,
+          "OK"
+        );
+
+        if (result.isConfirmed) router.push("/user");
       } else {
-        const errorData = await response.json();
-        console.error("Error:", errorData);
+        const errorData = response?.data || {};
+        console.error("Error response data:", errorData);
+        SweetAlert(
+          "Failed to create",
+          "error",
+          errorData.message || "Unknown error",
+          false,
+          "OK"
+        );
       }
     } catch (error) {
       console.error("Network error:", error);
-      alert("Failed to add user!");
+      SweetAlert("Failed to create", "error", "", false, "OK");
     }
   };
+
   return (
     <>
       <div
@@ -54,10 +91,20 @@ export default function Users() {
           gap: "2rem",
         }}
       >
-        <div>
-          <h2>New User</h2>
-        </div>
+        <div
+          style={{
+            display: "flex",
 
+            width: "100%",
+            alignItems: "center",
+          }}
+        >
+          <Link href="/user">
+            <CustomIcon name="ArrowBack" color="primary" />
+          </Link>
+
+          <h2 style={{ paddingLeft: "1rem" }}>User Details</h2>
+        </div>
         <form onSubmit={handleSubmit(createNewUser)} style={{}}>
           <Grid2 container spacing={4}>
             <Grid2 size={6}>

@@ -12,7 +12,7 @@ import { Box, Button, Skeleton, Typography } from "@mui/material";
 import Link from "next/link";
 import Navbar from "@/Components/layout/navbar/page";
 import Layout from "@/Components/layout/page";
-
+import Redirecting from "@/app/redirecting";
 
 const NAVIGATION: Navigation = [
   {
@@ -99,7 +99,7 @@ const DashboardLayoutBasic = ({ children }: { children: React.ReactNode }) => {
   // const session = await getServerSession(options);
   const { data: session, status: sessionStatus } = useSession();
 
-  // Decode the token safely  
+  // Decode the token safely
   let decodedToken;
   if (session) {
     decodedToken = jwtDecode<DecodedToken>(session?.user.token);
@@ -112,7 +112,7 @@ const DashboardLayoutBasic = ({ children }: { children: React.ReactNode }) => {
     if (sessionStatus === "unauthenticated") {
       router1.replace("/auth/login");
     }
-  }, [sessionStatus, router1]); 
+  }, [sessionStatus, router1]);
 
   if (sessionStatus === "loading") {
     return <>..Loading</>;
@@ -133,12 +133,12 @@ const DashboardLayoutBasic = ({ children }: { children: React.ReactNode }) => {
             </nav>
             {children} */}
             {/* <MiniDrawer /> */}
-          <Layout>{children}</Layout>
-           
+            <Layout>{children}</Layout>
           </>
         ) : (
-          <Link href={"/auth/login"}>Please Login</Link>
-          // <Layout>{children}</Layout>
+          <Link href={"/auth/login"}>
+            <Redirecting />
+          </Link>
         )}
       </div>
     </>
