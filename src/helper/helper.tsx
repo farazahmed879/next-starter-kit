@@ -2,18 +2,23 @@ import axios, { Axios, AxiosRequestConfig } from "axios";
 import Swal from "sweetalert2";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
+export const baseUrl = "http://localhost:8080/";
+
 export const ApiCall = async (
   url: string,
   method: "post" | "put" | "get" | "delete" | "patch",
-  payload?: any
+  payload?: any,
+  header?: any
 ): Promise<any> => {
   try {
+    url = `${baseUrl}${url}`;
     const config: AxiosRequestConfig = {
       url,
       method: method as AxiosRequestConfig["method"],
       data: payload,
       headers: {
         "Content-Type": "application/json",
+        ...header,
       },
     };
 
@@ -46,5 +51,8 @@ export const SweetAlert = async (
     cancelButtonText: cancelButtonText,
   });
 };
+
+
+
 
 export const ArrowBack = ArrowBackIcon;

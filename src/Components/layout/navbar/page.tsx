@@ -91,7 +91,6 @@ const Navbar: React.FC<NavbarProps> = ({
   };
 
   const handleLogout = () => {
-    console.log("logout")
     signOut();
   };
 

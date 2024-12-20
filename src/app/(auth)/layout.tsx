@@ -12,7 +12,7 @@ import { Box, Button, Skeleton, Typography } from "@mui/material";
 import Link from "next/link";
 import Navbar from "@/Components/layout/navbar/page";
 import Layout from "@/Components/layout/page";
-
+import { ChatContextProvider } from "@/context/ChatContext";
 
 const NAVIGATION: Navigation = [
   {
@@ -94,25 +94,21 @@ interface DecodedToken {
   role: string;
 }
 const DashboardLayoutBasic = ({ children }: { children: React.ReactNode }) => {
-  // const { window, children } = props;
   const router1 = useRouter();
   // const session = await getServerSession(options);
   const { data: session, status: sessionStatus } = useSession();
 
-  // Decode the token safely  
+  // Decode the token safely
   let decodedToken;
   if (session) {
     decodedToken = jwtDecode<DecodedToken>(session?.user.token);
-    // console.log("Decoded token from layout",decodedToken);
   }
-
-  // console.log("session from layout", session);
 
   React.useEffect(() => {
     if (sessionStatus === "unauthenticated") {
       router1.replace("/auth/login");
     }
-  }, [sessionStatus, router1]); 
+  }, [sessionStatus, router1]);
 
   if (sessionStatus === "loading") {
     return <>..Loading</>;
@@ -133,8 +129,9 @@ const DashboardLayoutBasic = ({ children }: { children: React.ReactNode }) => {
             </nav>
             {children} */}
             {/* <MiniDrawer /> */}
-          <Layout>{children}</Layout>
-           
+            <ChatContextProvider user={decodedToken}>
+              <Layout>{children}</Layout>
+            </ChatContextProvider>
           </>
         ) : (
           <Link href={"/auth/login"}>Please Login</Link>

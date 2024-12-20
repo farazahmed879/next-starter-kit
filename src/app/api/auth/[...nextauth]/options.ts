@@ -45,12 +45,12 @@ export const options: NextAuthOptions = {
 
           const data = await response.json();
 
-          if (data && data.token) {
+          if (data && data?.user?.token) {
             return {
-              id: data.id,
-              name: data.name,
-              email: data.email,
-              token: data.token,
+              id: data?.user._doc?.id,
+              name: data?.user._doc?.name,
+              email: data?.user._doc?.email,
+              token: data?.user.token,
             };
           } else {
             return null;
@@ -96,7 +96,7 @@ export const options: NextAuthOptions = {
         session.user.token = token.token;
         session.user.token = token.token ?? "";
       }
-      return session
+      return session;
     },
   },
 };
