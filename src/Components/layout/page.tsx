@@ -38,7 +38,7 @@ const Layout: React.FC<layoutProps> = ({ children }) => {
 
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
           <DrawerHeader />
-          <Typography sx={{ marginBottom: 2 }}>{children}</Typography>
+          <Typography component={'span'} sx={{ marginBottom: 2 }}>{children}</Typography>
         </Box>
       </Box>
     </>

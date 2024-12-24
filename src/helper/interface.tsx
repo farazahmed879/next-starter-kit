@@ -41,7 +41,6 @@ export interface Session {
   };
 }
 
-
 export interface AuthContextType {
   user: DecodedToken | null;
   registerInfo: RegisterInfo;
@@ -66,11 +65,13 @@ export interface AuthContextProviderProps {
   children: ReactNode;
 }
 
-
 export interface User {
-  _id: string;
-  name: string;
-  email: string;
+  createdAt: string | null;
+  email: string | null;
+  name: string | null;
+  role: string | null;
+  updatedAt: string | null;
+  _id: string | null;
 }
 
 export interface Chat {
@@ -78,7 +79,6 @@ export interface Chat {
 }
 
 export interface UseFetchRecipientUserReturn {
-  receipientUser: any | null;
+  receipientUser: User | null;
   error: any | null;
 }
-

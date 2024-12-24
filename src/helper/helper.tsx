@@ -1,6 +1,9 @@
 import axios, { Axios, AxiosRequestConfig } from "axios";
 import Swal from "sweetalert2";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useSession } from "next-auth/react";
+import { jwtDecode } from "jwt-decode";
+// const { data: session, status: sessionStatus } = useSession();
 
 export const baseUrl = "http://localhost:8080/";
 
@@ -11,6 +14,7 @@ export const ApiCall = async (
   header?: any
 ): Promise<any> => {
   try {
+    // const token = session?.user?.token;
     url = `${baseUrl}${url}`;
     const config: AxiosRequestConfig = {
       url,
@@ -51,8 +55,5 @@ export const SweetAlert = async (
     cancelButtonText: cancelButtonText,
   });
 };
-
-
-
 
 export const ArrowBack = ArrowBackIcon;

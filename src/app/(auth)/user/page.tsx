@@ -85,8 +85,7 @@ const Project: React.FC = () => {
     try {
       // Decode the token to extract the role
       const decodedToken = jwtDecode<{ role: string }>(token);
-      console.log("Decoded Token:", decodedToken);
-      console.log("Decoded token role", decodedToken.role)
+
 
   
       let url = "http://localhost:8080/users";
@@ -105,7 +104,6 @@ const Project: React.FC = () => {
 
       if (response.ok) {
         const result = await response.json();
-        console.log("Fetched Users:", result);
         setData(result.data); 
       } else {
         const errorData = await response.json();

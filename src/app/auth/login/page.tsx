@@ -177,7 +177,7 @@ export default function SignIn({}: {}) {
               Sign in with Google
             </Button> */}
 
-            <Typography sx={{ textAlign: "center", cursor: "pointer" }}>
+            <Typography component={'span'} sx={{ textAlign: "center", cursor: "pointer" }}>
               Don&apos;t have an account?{" "}
               <Link
                 onClick={() => router.push("/auth/register")}

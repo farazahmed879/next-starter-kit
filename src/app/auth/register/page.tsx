@@ -100,7 +100,6 @@ export default function SignUp({}: {}) {
   } = useForm<Inputs>({ defaultValues });
 
   const onSubmit: SubmitHandler<Inputs> = async (data: any) => {
-    // console.log("onSubmit", data);
     if (data.password != data.confirmPassword) return;
     const reqData = {
       name: data.name,
@@ -178,10 +177,10 @@ export default function SignUp({}: {}) {
             </Box>
           </form>
           <Divider>
-            <Typography sx={{ color: "text.secondary" }}>or</Typography>
+            <Typography component={'span'} sx={{ color: "text.secondary" }}>or</Typography>
           </Divider>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            <Typography sx={{ textAlign: "center", cursor: "pointer" }}>
+            <Typography component={'span'} sx={{ textAlign: "center", cursor: "pointer" }}>
               Already have an account?{" "}
               <Link
                 onClick={() => router.push("/auth/login")}

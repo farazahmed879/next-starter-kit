@@ -6,11 +6,10 @@ import React, { useEffect } from "react";
 import { Box, Typography } from "@mui/material";
 import CustomLoader from "@/Components/CustomLoader";
 import { ApiCall, SweetAlert } from "@/helper/helper";
-import io from 'socket.io-client';
+
 import { useRouter } from "next/navigation";
 
 const Product: React.FC = () => {
-  const socket = io('http://localhost:8080');
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [data, setData] = React.useState([]);
@@ -84,26 +83,7 @@ const Product: React.FC = () => {
     getProducts("");
   }, []);
 
-  useEffect(() => {
-    socket.on('connect', () => {
-      console.log('Connected to WebSocket server');
-    });
-  
-    socket.on('disconnect', () => {
-      console.log('Disconnected from WebSocket server');
-    });
-  
-    socket.on('message', (message) => {
-      // Handle incoming message
-      console.log('Received message:', message);
-    });
-  
-    return () => {
-      socket.off('connect');
-      socket.off('disconnect');
-      socket.off('message');
-    };
-  }, []);
+
 
   return (
     <div style={{ width: "100%" }}>
@@ -114,7 +94,7 @@ const Product: React.FC = () => {
           justifyContent: "space-between",
         }}
       >
-        <Typography>Products</Typography>
+        <Typography component={'span'}>Products</Typography>
         <CustomButton
           variant="outlined"
           text="Add Product "

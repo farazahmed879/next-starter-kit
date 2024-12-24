@@ -1,14 +1,11 @@
 export const baseUrl = "http://localhost:8080/";
 import { useSession } from "next-auth/react";
-const { data: session, status: sessionStatus } = useSession();
-const token = session?.user?.token; //
 export const postMethod = async (url: string, body: any, isToken?: boolean) => {
   url = `${baseUrl}${url}`;
   const response = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: isToken ? `Bearer ${token}` : "",
     },
     body: JSON.stringify(body),
   });

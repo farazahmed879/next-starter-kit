@@ -29,9 +29,6 @@ export default function AccountMenu({
   };
 
   const decodedToken: any = jwtDecode<{ role: string }>(session?.user?.token);
-  // console.log("User details:", decodedToken);
-
-  // console.log("session", session);
 
   return (
     <React.Fragment>

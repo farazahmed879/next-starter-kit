@@ -59,7 +59,6 @@ const demoTheme = extendTheme({
 // function useDemoRouter(initialPath: string): Router {
 //   const [pathname, setPathname] = React.useState(initialPath);
 
-//   console.log(pathname);
 
 //   const router = React.useMemo(() => {
 //     return {
@@ -83,7 +82,7 @@ function DemoPageContent({ pathname }: { pathname: string }) {
         textAlign: "center",
       }}
     >
-      <Typography>Dashboard content for {pathname}</Typography>
+      <Typography component={'span'}>Dashboard content for {pathname}</Typography>
     </Box>
   );
 }
@@ -117,27 +116,24 @@ const DashboardLayoutBasic = ({ children }: { children: React.ReactNode }) => {
   // const logout = () => {
   //   signOut();
   // };
-  // console.log(sessionStatus)
 
   return (
     <>
-      <div>
-        {sessionStatus === "authenticated" ? (
-          <>
-            {/* <nav>
+      {sessionStatus === "authenticated" ? (
+        <>
+          {/* <nav>
               <button onClick={logout}>Logout</button>
             </nav>
             {children} */}
-            {/* <MiniDrawer /> */}
-            <ChatContextProvider user={decodedToken}>
-              <Layout>{children}</Layout>
-            </ChatContextProvider>
-          </>
-        ) : (
-          <Link href={"/auth/login"}>Please Login</Link>
-          // <Layout>{children}</Layout>
-        )}
-      </div>
+          {/* <MiniDrawer /> */}
+          <ChatContextProvider user={decodedToken}>
+            <Layout>{children}</Layout>
+          </ChatContextProvider>
+        </>
+      ) : (
+        <Link href={"/auth/login"}>Please Login</Link>
+        // <Layout>{children}</Layout>
+      )}
     </>
   );
 };
