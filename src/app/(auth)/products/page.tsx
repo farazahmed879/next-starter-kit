@@ -4,14 +4,20 @@ import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { Box, Typography } from "@mui/material";
 import CustomLoader from "@/Components/CustomLoader";
-import { apiCall, baseUrl, getMethod, getMethodAxio, SweetAlert } from "@/helper/helper";
+import {
+  apiCall,
+  baseUrl,
+  getMethod,
+  getMethodAxio,
+  SweetAlert,
+} from "@/helper/helper";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import CustomIcon from "@/Components/CustomIcon";
 
 const Product: React.FC = () => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [data, setData] = React.useState([]);
+  const [products, setProducts] = React.useState([]);
   const [filter, setFilter] = React.useState("");
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
@@ -95,12 +101,14 @@ const Product: React.FC = () => {
       // if (a) url += `?key=${a}`;
       // const data = await apiCall(url, "get");
 
-    //  const data = await getMethod(`${baseUrl}/product` )
+      //  const data = await getMethod(`${baseUrl}/product` )
 
-    const { status, data, error, message } = await getMethodAxio(`${baseUrl}/product`);
+      const { status, data, error, message } = await getMethodAxio(
+        `${baseUrl}/product`
+      );
 
       setIsLoading(false);
-      if (data) return setData(data?.data.data);
+      if (data) return setProducts(data?.data);
       SweetAlert(`${error}`, `error`, "Something went wrong");
     } catch (error) {
       SweetAlert("Error", "error", `Something went wrong`);
@@ -119,6 +127,7 @@ const Product: React.FC = () => {
     getProducts("");
   }, []);
 
+  console.log(products, "This products");
   return (
     <div style={{ width: "100%" }}>
       <CustomLoader isLoading={isLoading} />
@@ -138,7 +147,11 @@ const Product: React.FC = () => {
       </Box>
 
       <Box sx={{ marginTop: 1 }}>
-        <DataGrid rows={data} columns={columns} getRowId={(row) => row._id} />
+        <DataGrid
+          rows={products}
+          columns={columns}
+          getRowId={(row) => row._id}
+        />
       </Box>
     </div>
   );

@@ -1,5 +1,4 @@
 import axios, { Axios, AxiosRequestConfig } from "axios";
-import { url } from "inspector";
 import Swal from "sweetalert2";
 
 export const baseUrl = `http://localhost:8080`;
@@ -107,3 +106,4 @@ export const getMethodAxio = async (url: string) => {
     return { error: true, message };
   }
 };
+
