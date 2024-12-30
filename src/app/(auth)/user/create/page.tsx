@@ -17,9 +17,6 @@ export default function Users() {
     file: string;
   };
 
-
-
-
   const defaultValues = {
     name: "",
     email: "",
@@ -38,6 +35,15 @@ export default function Users() {
 
   const createNewUser = async (data: Inputs) => {
     try {
+      const result = await SweetAlert(
+        "Are you sure?",
+        "info",
+        "You are about to add a New User",
+        true,
+        `Yes!`,
+        "No"
+      );
+
       let url = "http://localhost:8080/users";
       const payload = {
         name: data.name,
@@ -48,12 +54,10 @@ export default function Users() {
 
       console.log("Payload being sent:", payload);
 
+      const response = await postMethod(`${baseUrl}/users`, payload);
 
-
-      const response = await postMethod(`${baseUrl}/users`,payload)
-
-      if (response && response.status === 201 || response.status === 200) {
-        const result = await SweetAlert(
+      if ((response && response.status === 201) || response.status === 200) {
+        const successMessage = await SweetAlert(
           "User Created",
           "success",
           "",
@@ -61,7 +65,8 @@ export default function Users() {
           "OK"
         );
 
-        if (result.isConfirmed) router.push("/user");
+        if (successMessage.isConfirmed && result.isConfirmed)
+          router.push("/user");
       } else {
         const errorData = response?.data || {};
         console.error("Error response data:", errorData);

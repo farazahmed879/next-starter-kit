@@ -10,7 +10,7 @@ import { useSession } from "next-auth/react";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import CustomIcon from "@/Components/CustomIcon";
 import CustomLoader from "@/Components/CustomLoader";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { apiCall, SweetAlert } from "@/helper/helper";
 
 const Project: React.FC = () => {
@@ -161,7 +161,7 @@ const Project: React.FC = () => {
           justifyContent: "space-between",
         }}
       >
-        <h2>Users</h2>
+        <Typography component="span">Users</Typography>
         <CustomButton
           variant="outlined"
           text="Add User "

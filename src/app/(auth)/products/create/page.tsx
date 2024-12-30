@@ -52,34 +52,55 @@ export default function ProductForm() {
     setValue("file", product.file);
   };
 
+  const message2 = id
+    ? "You are about to update this Product"
+    : "You are about to add a new Product";
+
+  const buttonMessage = id ? "Update" : "Add";
   const submitProductData: SubmitHandler<any> = async (data) => {
     try {
-      setIsLoading(true);
+      // Show SweetAlert confirmation dialog
+      const result = await SweetAlert(
+        "Are you sure?",
+        "info",
+        message2,
+        true,
+        `Yes, ${buttonMessage}!`,
+        "No"
+      );
 
+      if (!result.isConfirmed) {
+        console.log("User clicked No, update cancelled.");
+        return;
+      }
+
+      setIsLoading(true);
       if (id) data.id = id;
 
       const methodType = id ? "PUT" : "POST";
-      const url = id ? `http://localhost:8080/product/${id}` : "http://localhost:8080/product"
+      const url = id
+        ? `http://localhost:8080/product/${id}`
+        : "http://localhost:8080/product";
 
-      const response = await apiCall(
-        url,
-        methodType,
-        data
-      );
+      const response = await apiCall(url, methodType, data);
 
       setIsLoading(false);
 
-      let message = id ? "Prodcut Updated" : "Product Added";
-      console.log("This is repsponse status",response.status)
-      if (response.status === 201 || response.status === 200) {
-        const result = await SweetAlert(
+      let message = id ? "Product Updated" : "Product Added";
+      console.log("Response status:", response.status);
+
+      if (response.status === 200 || response.status === 201) {
+        const successMessage = await SweetAlert(
           "Success",
           "success",
           message,
           false,
           "OK"
         );
-        if (result.isConfirmed) router.push("/products");
+
+        if (successMessage.isConfirmed) {
+          router.push("/products");
+        }
       } else {
         SweetAlert("Error", "error", "Something went wrong", false, "OK");
       }

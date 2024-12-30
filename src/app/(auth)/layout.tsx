@@ -83,7 +83,7 @@ function DemoPageContent({ pathname }: { pathname: string }) {
         textAlign: "center",
       }}
     >
-      <Typography>Dashboard content for {pathname}</Typography>
+      <Typography component="span">Dashboard content for {pathname}</Typography>
     </Box>
   );
 }
