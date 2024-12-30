@@ -2,7 +2,7 @@
 import { createContext, useCallback, useEffect, useRef, useState } from "react";
 import { baseUrl, ApiCall } from "../helper/helper";
 import { useSession } from "next-auth/react";
-import { postMethod } from "@/helper/services";
+
 import { io } from "socket.io-client";
 
 export const ChatContext = createContext();
@@ -19,6 +19,8 @@ export const ChatContextProvider = ({ children, user }) => {
   const [newMessage, setNewMessage] = useState(null);
   const [socket, setSocket] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
   const currentChatRef = useRef(currentChat);
   const { data: session, status: sessionStatus } = useSession();
 
@@ -68,6 +70,14 @@ export const ChatContextProvider = ({ children, user }) => {
     []
   );
 
+  const markAllNotificationAsRead = useCallback(async (notifications) => {
+    const newNotifications = notifications.map((e) => {
+      return { ...e, isRead: true };
+    });
+
+    setNotifications(newNotifications);
+  });
+
   const getUsers = async () => {
     const token = session?.user?.token;
     setIsLoading(true);
@@ -89,6 +99,7 @@ export const ChatContextProvider = ({ children, user }) => {
     });
 
     setPotentialChats(pChats);
+    setAllUsers(response?.data?.data);
   };
 
   useEffect(() => {
@@ -116,9 +127,12 @@ export const ChatContextProvider = ({ children, user }) => {
   }, [user]);
 
   useEffect(() => {
-    if (!socket) return;
+    console.log("socket", socket);
+    if (socket == null) return;
+    console.log("socket challa");
     socket.emit("addNewUser", user?._id);
     socket.on("getOnlneUsers", (res) => {
+      console.log("getOnlneUsers", res);
       setOnlineUsers(res);
     });
 
@@ -132,11 +146,11 @@ export const ChatContextProvider = ({ children, user }) => {
 
     const receipientId = currentChat?.members?.find((id) => id !== user?._id);
 
-    console.log("sendMessage currentchat", currentChat);
+    // console.log("sendMessage currentchat", currentChat);
     socket.emit("sendMessage", { ...newMessage, receipientId });
   }, [newMessage]);
 
-  //receive message
+  //receive message and notifcations
 
   useEffect(() => {
     if (!socket) return;
@@ -146,16 +160,27 @@ export const ChatContextProvider = ({ children, user }) => {
       setMessages((prev) => [...prev, res]);
     });
 
+    socket.on("getNotification", (res) => {
+      const isChatOpen = currentChatRef.current?.members.some(
+        (id) => id == res.senderId
+      );
+      if (isChatOpen) {
+        setNotifications((prev) => [{ ...res, isRead: true }, ...prev]);
+      } else {
+        setNotifications((prev) => [...prev, res]);
+      }
+    });
+
     return () => {
       socket.off("getMessage");
+      socket.off("getNotification");
     };
   }, [socket]);
-
-  console.log("currentChat1", currentChat);
 
   useEffect(() => {
     currentChatRef.current = currentChat; // update the ref whenever currentChat changes
   }, [currentChat]);
+
   return (
     <ChatContext.Provider
       value={{
@@ -169,6 +194,9 @@ export const ChatContextProvider = ({ children, user }) => {
         currentChat,
         sendTextMessage,
         onlineUsers,
+        notifications,
+        allUsers,
+        markAllNotificationAsRead
       }}
     >
       {children}

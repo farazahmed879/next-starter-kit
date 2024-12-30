@@ -40,7 +40,11 @@ const UserChat = ({ user, chat }: any) => {
           </div>
         </div>
         <div>
-          <span style={isOnline ? styles : undefined}></span>
+          <span
+          // style={isOnline ? styles : undefined}
+          >
+            {isOnline ? "online" : ""}
+          </span>
           <div style={{ fontSize: "small" }}>12/12/12</div>
           <div
             style={{

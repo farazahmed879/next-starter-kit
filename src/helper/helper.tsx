@@ -3,6 +3,8 @@ import Swal from "sweetalert2";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useSession } from "next-auth/react";
 import { jwtDecode } from "jwt-decode";
+import { Notifications } from "./interface";
+import moment from 'moment'
 // const { data: session, status: sessionStatus } = useSession();
 
 export const baseUrl = "http://localhost:8080/";
@@ -56,4 +58,12 @@ export const SweetAlert = async (
   });
 };
 
+export const unreadNotification = (notifications: Notifications[] = []) => {
+  return notifications.filter((e: Notifications) => e.isRead == false);
+};
+
 export const ArrowBack = ArrowBackIcon;
+
+export const convertDate = (date: any) => {
+  return moment(date).format("MMMM Do YYYY, h:mm:ss a");
+};

@@ -4,6 +4,7 @@ import { useFetchRecipientUser } from "@/hooks/useFetchRecipient";
 import { useContext, useEffect, useRef, useState } from "react";
 import InputEmoji from "react-input-emoji";
 import CustomButton from "./CustomButton";
+import { convertDate } from "@/helper/helper";
 
 
 const ChatBox = () => {
@@ -83,7 +84,7 @@ const ChatBox = () => {
                 >
                   <div>
                     <div>{msg?.text}</div>
-                    <div style={{ fontSize: "small" }}>{msg?.createdAt}</div>
+                    <div style={{ fontSize: "small" }}>{convertDate(msg?.createdAt)}</div>
                   </div>
                 </div>
               </div>

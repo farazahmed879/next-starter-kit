@@ -6,7 +6,6 @@ const PotentialChats = ({ user, createChat }: any) => {
   //   const { user } = useContext(AuthContext);
   const { potentialChats, onlineUsers } = useContext(ChatContext);
 
-
   const styles: React.CSSProperties = {
     background: "skyblue",
     border: "solid skyblue",
@@ -21,7 +20,7 @@ const PotentialChats = ({ user, createChat }: any) => {
       {potentialChats &&
         potentialChats.map((e: any, index: number) => (
           <Typography
-          component={'span'}
+            component={"span"}
             key={index}
             onClick={() => createChat(user?._id, e?._id)}
             style={{
@@ -34,12 +33,15 @@ const PotentialChats = ({ user, createChat }: any) => {
           >
             {e.name}
             <span
-              style={
-                onlineUsers.some((i: any) => i.userId == e?._id)
-                  ? styles
-                  : undefined
-              }
-            ></span>
+              // style={
+              //   onlineUsers.some((i: any) => i.userId == e?._id)
+              //     ? styles
+              //     : undefined
+              // }
+            >
+              {" "}
+              {onlineUsers.some((i: any) => i.userId == e?._id) ? "online" : ""}
+            </span>
           </Typography>
         ))}
     </div>

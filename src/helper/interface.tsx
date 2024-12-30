@@ -82,3 +82,10 @@ export interface UseFetchRecipientUserReturn {
   receipientUser: User | null;
   error: any | null;
 }
+
+export interface Notifications {
+  senderId: string;
+  isRead: boolean;
+  date: string;
+  senderName?: string;
+}
