@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useContext } from "react";
 import Box from "@mui/material/Box";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -12,13 +13,15 @@ import { ChatContext } from "@/context/ChatContext";
 import { Typography } from "@mui/material";
 import { convertDate, unreadNotification } from "@/helper/helper";
 import { Notifications, User } from "@/helper/interface";
-import CustomButton from "./CustomButton";
+import { AuthContext } from "@/context/AuthContext";
 
-export default function Notification({}: {}) {
+export default function Notification({ }: {}) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
-  const { notifications, userChats, allUsers } = React.useContext(ChatContext);
+
+  const { notifications, userChats, allUsers, markAllNotificationAsRead, markNotificationAsRead } = useContext(ChatContext);
+  const { user } = useContext<any>(AuthContext);
 
   const unReadNotifications: Notifications[] =
     unreadNotification(notifications);
@@ -32,7 +35,7 @@ export default function Notification({}: {}) {
     }
   );
 
-  console.log("modifiedNotifications", modifiedNotifications);
+  // console.log("modifiedNotifications", modifiedNotifications);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -41,10 +44,11 @@ export default function Notification({}: {}) {
     setAnchorEl(null);
   };
 
-  console.log("notifications", notifications);
+
+  // console.log("notifications", notifications);
 
   const CountSpan = ({ noti = [] }: any) => {
-    console.log("noti", noti);
+    // console.log("noti", noti);
     return <span style={style}>{noti?.length}</span>;
   };
 
@@ -122,33 +126,38 @@ export default function Notification({}: {}) {
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
         <>
-       
-            {!!modifiedNotifications.length && (
-              <>
-                 <MenuItem
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              gap: "4",
-            }}
-          >
+
+          {!!modifiedNotifications.length && (
+            <>
+              <MenuItem
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  gap: "4",
+                }}
+              >
                 <Typography>Notifications</Typography>
-                <Typography  sx={{ fontSize: "small" }} component={"h6"}>
+                <Typography sx={{ fontSize: "small" }} component={"h6"} onClick={() => markAllNotificationAsRead(notifications)}>
                   Mark all as read
                 </Typography>
-                </MenuItem>
-              </>
-            )}
+              </MenuItem>
+            </>
+          )}
           {modifiedNotifications?.length ? (
-            modifiedNotifications.map((e: Notifications) => (
+            modifiedNotifications.map((e: Notifications, key: number
+
+            ) => (
               <MenuItem
+                key={key}
                 onClick={() => handleClose()}
                 sx={{ backgroundColor: e?.isRead ? "" : "bisque" }}
               >
                 <ListItemIcon>
                   <Settings fontSize="small" />
                 </ListItemIcon>
-                <Typography component={"span"}>
+                <Typography component={"span"} onClick={() => markNotificationAsRead(e, userChats
+                  , user, notifications
+                )}>
                   <Typography
                     component={"span"}
                   >{`${e.senderName} sent you a message`}</Typography>

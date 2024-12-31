@@ -78,6 +78,43 @@ export const ChatContextProvider = ({ children, user }) => {
     setNotifications(newNotifications);
   });
 
+  const markNotificationAsRead = useCallback(
+    async (n, userChats, user, notifications) => {
+
+      debugger
+      const chat = userChats.find((c) => {
+        const chatMembers = [user._id, n.senderId];
+        const isDesired = c?.members.every((member) => {
+          return chatMembers.includes(member);
+        });
+
+        return isDesired;
+      });
+
+      //
+      const mNotifications = notifications.map((e) => {
+        if (n.senderId == e.senderId) return { ...n, isRead: true };
+        else return e;
+      });
+
+      updateCurrentChat(chat);
+      setNotifications(mNotifications);
+    }
+  );
+
+  const getNotifications = async () => {
+    if (user?._id) {
+      setIsLoading(true);
+      const response = await ApiCall(`notifications/${user?._id}`);
+      setIsLoading(false);
+      if (!response) return;
+
+      console.log("db notifications", response?.data);
+      //setUserChats(response?.data);
+      // getUsers(response?.data);
+    }
+  };
+
   const getUsers = async () => {
     const token = session?.user?.token;
     setIsLoading(true);
@@ -110,6 +147,7 @@ export const ChatContextProvider = ({ children, user }) => {
   useEffect(() => {
     if (!user) return;
     getUserChat();
+    getNotifications();
   }, [user]);
 
   useEffect(() => {
@@ -196,7 +234,8 @@ export const ChatContextProvider = ({ children, user }) => {
         onlineUsers,
         notifications,
         allUsers,
-        markAllNotificationAsRead
+        markAllNotificationAsRead,
+        markNotificationAsRead
       }}
     >
       {children}
