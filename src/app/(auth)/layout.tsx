@@ -59,7 +59,6 @@ const demoTheme = extendTheme({
 // function useDemoRouter(initialPath: string): Router {
 //   const [pathname, setPathname] = React.useState(initialPath);
 
-
 //   const router = React.useMemo(() => {
 //     return {
 //       pathname,
@@ -82,7 +81,9 @@ function DemoPageContent({ pathname }: { pathname: string }) {
         textAlign: "center",
       }}
     >
-      <Typography component={'span'}>Dashboard content for {pathname}</Typography>
+      <Typography component={"span"}>
+        Dashboard content for {pathname}
+      </Typography>
     </Box>
   );
 }
@@ -95,7 +96,7 @@ interface DecodedToken {
 const DashboardLayoutBasic = ({ children }: { children: React.ReactNode }) => {
   const router1 = useRouter();
   // const session = await getServerSession(options);
-  const { data: session, status: sessionStatus } = useSession();
+  const { data: session, status: sessionStatus, update } = useSession();
 
   // Decode the token safely
   let decodedToken;
@@ -112,6 +113,14 @@ const DashboardLayoutBasic = ({ children }: { children: React.ReactNode }) => {
   if (sessionStatus === "loading") {
     return <>..Loading</>;
   }
+
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     update(); // extend client session
+  //     // TODO request token refresh from server
+  //   }, 1000 * 60 * 60)
+  //   return () => clearInterval(interval)
+  // }, [update]); 
 
   // const logout = () => {
   //   signOut();
@@ -131,7 +140,7 @@ const DashboardLayoutBasic = ({ children }: { children: React.ReactNode }) => {
           </ChatContextProvider>
         </>
       ) : (
-        <Link href={"/auth/login"}>Please Login</Link>
+        <Link href={"/auth/login"}>Please Login...</Link>
         // <Layout>{children}</Layout>
       )}
     </>

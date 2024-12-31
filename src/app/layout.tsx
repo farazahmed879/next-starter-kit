@@ -21,13 +21,15 @@ const geistMono = localFont({
 
 export default function RootLayout({
   children,
+  pageProps,
 }: Readonly<{
   children: React.ReactNode;
+  pageProps: any;
 }>) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <SessionProviderWrapper>
+        <SessionProviderWrapper pageProps={pageProps}>
           <AuthConextProvider>{children}</AuthConextProvider>
         </SessionProviderWrapper>
 
