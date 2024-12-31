@@ -76,6 +76,9 @@ export interface User {
 
 export interface Chat {
   members: string[];
+  reatedAt: "";
+  updatedAt: "";
+  _id: "";
 }
 
 export interface UseFetchRecipientUserReturn {
@@ -88,4 +91,14 @@ export interface Notifications {
   isRead: boolean;
   date: string;
   senderName?: string;
+  message?: string
+}
+
+export interface Message {
+  chatId: string;
+  createdAt: string;
+  senderId: string;
+  text: string;
+  updatedAt: string;
+  _id: string;
 }

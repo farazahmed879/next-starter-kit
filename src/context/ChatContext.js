@@ -10,12 +10,10 @@ export const ChatContext = createContext();
 export const ChatContextProvider = ({ children, user }) => {
   const [userChats, setUserChats] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [potentialChats, setPotentialChats] = useState(null);
   const [currentChat, setCurrentChat] = useState(null);
   const [messages, setMessages] = useState(null);
   const [isMessageLoading, setIsMessageLoading] = useState(false);
-  const [messageError, setMessageError] = useState(null);
   const [newMessage, setNewMessage] = useState(null);
   const [socket, setSocket] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
@@ -74,14 +72,14 @@ export const ChatContextProvider = ({ children, user }) => {
     const newNotifications = notifications.map((e) => {
       return { ...e, isRead: true };
     });
-
+    const url = "notifications/markAllRead";
+    const data = { userId: user?._id };
+    createOrMarkNotificationAsReadApi(url, data);
     setNotifications(newNotifications);
   });
 
   const markNotificationAsRead = useCallback(
     async (n, userChats, user, notifications) => {
-
-      debugger
       const chat = userChats.find((c) => {
         const chatMembers = [user._id, n.senderId];
         const isDesired = c?.members.every((member) => {
@@ -97,10 +95,24 @@ export const ChatContextProvider = ({ children, user }) => {
         else return e;
       });
 
+      const url = "notifications/markReadByUserId";
+      const data = { userId: n?.userId, senderId: n?.senderId };
+      createOrMarkNotificationAsReadApi(url, data);
       updateCurrentChat(chat);
       setNotifications(mNotifications);
     }
   );
+  const markUserNotificationAsRead = useCallback(async (chatUser) => {
+    let mNotifcations = [];
+    notifications.forEach((e) => {
+      if (e?.senderId == chatUser?._id) e.isRead = true;
+      mNotifcations.push(e);
+    });
+    const url = "notifications/markReadByUserId";
+    const data = { userId: user?._id, senderId: chatUser?._id };
+    createOrMarkNotificationAsReadApi(url, data);
+    setNotifications(mNotifcations);
+  });
 
   const getNotifications = async () => {
     if (user?._id) {
@@ -109,7 +121,7 @@ export const ChatContextProvider = ({ children, user }) => {
       setIsLoading(false);
       if (!response) return;
 
-      console.log("db notifications", response?.data);
+      setNotifications(response?.data);
       //setUserChats(response?.data);
       // getUsers(response?.data);
     }
@@ -139,6 +151,15 @@ export const ChatContextProvider = ({ children, user }) => {
     setAllUsers(response?.data?.data);
   };
 
+  const createOrMarkNotificationAsReadApi = async (
+    url = "notifications",
+    data = {}
+  ) => {
+    const response = await ApiCall(url, "post", data, {
+      Authorization: `Bearer ${session?.user?.token}`,
+    });
+  };
+
   useEffect(() => {
     if (!userChats || !userChats?.length) return;
     getUsers();
@@ -165,12 +186,9 @@ export const ChatContextProvider = ({ children, user }) => {
   }, [user]);
 
   useEffect(() => {
-    console.log("socket", socket);
     if (socket == null) return;
-    console.log("socket challa");
     socket.emit("addNewUser", user?._id);
     socket.on("getOnlneUsers", (res) => {
-      console.log("getOnlneUsers", res);
       setOnlineUsers(res);
     });
 
@@ -184,8 +202,16 @@ export const ChatContextProvider = ({ children, user }) => {
 
     const receipientId = currentChat?.members?.find((id) => id !== user?._id);
 
-    // console.log("sendMessage currentchat", currentChat);
     socket.emit("sendMessage", { ...newMessage, receipientId });
+    const url = "notifications";
+    const data = {
+      senderId: user?._id,
+      userId: receipientId,
+      isRead: false,
+      message: `${user?.email}`,
+    };
+
+    createOrMarkNotificationAsReadApi(url, data);
   }, [newMessage]);
 
   //receive message and notifcations
@@ -219,6 +245,8 @@ export const ChatContextProvider = ({ children, user }) => {
     currentChatRef.current = currentChat; // update the ref whenever currentChat changes
   }, [currentChat]);
 
+  console.log("meta notifications", notifications);
+
   return (
     <ChatContext.Provider
       value={{
@@ -235,7 +263,8 @@ export const ChatContextProvider = ({ children, user }) => {
         notifications,
         allUsers,
         markAllNotificationAsRead,
-        markNotificationAsRead
+        markNotificationAsRead,
+        markUserNotificationAsRead,
       }}
     >
       {children}

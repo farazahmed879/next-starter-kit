@@ -19,7 +19,6 @@ const Chat = () => {
   } = useContext(ChatContext);
   const { user } = useContext<any>(AuthContext);
 
-
   const createChat = async (firstId: number, secondId: number) => {
     const url = "chats";
     const response = await ApiCall(url, "post", { firstId, secondId });
@@ -38,7 +37,12 @@ const Chat = () => {
       <Grid2 container spacing={4} height={"80vh"}>
         <Grid2
           size={4}
-          sx={{ border: "solid #eedd82", padding: 1, borderRadius: 2 }}
+          sx={{
+            border: "solid #eedd82",
+            padding: 1,
+            borderRadius: 2,
+            width: "30%",
+          }}
         >
           <>{isLoading ? "...loading chats" : ""}</>
           <PotentialChats user={user} createChat={createChat} />

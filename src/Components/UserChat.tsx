@@ -1,12 +1,23 @@
 import { ChatContext } from "@/context/ChatContext";
+import { convertDate, unreadNotification } from "@/helper/helper";
+import { useFetchLatestMessage } from "@/hooks/useFetchLastMessage";
 import { useFetchRecipientUser } from "@/hooks/useFetchRecipient";
-import { Avatar } from "@mui/material";
+import { Avatar, Typography } from "@mui/material";
 import { useContext } from "react";
 
 const UserChat = ({ user, chat }: any) => {
   const { receipientUser } = useFetchRecipientUser(chat, user);
 
-  const { onlineUsers } = useContext(ChatContext);
+  const { lastestMessage } = useFetchLatestMessage(chat);
+
+  const { onlineUsers, notifications, markUserNotificationAsRead } =
+    useContext(ChatContext);
+
+  const unreadNotifications = unreadNotification(notifications);
+
+  const currentUserNotification = unreadNotifications.filter(
+    (i) => i?.senderId == receipientUser?._id
+  );
 
   const isOnline = onlineUsers.some(
     (i: any) => i.userId == receipientUser?._id
@@ -16,10 +27,14 @@ const UserChat = ({ user, chat }: any) => {
     background: "skyblue",
     border: "solid skyblue",
     borderRadius: "62%",
-    height: "5px",
-    width: "5px",
-    position: "absolute",
-    margin: -2,
+    height: "10px",
+    width: "10px",
+  };
+
+  const trucateText = (text: string = "") => {
+    if (text?.length > 20) return `${text?.substring(0, 20)}...`;
+
+    return text;
   };
 
   return (
@@ -31,21 +46,27 @@ const UserChat = ({ user, chat }: any) => {
           justifyContent: "space-between",
           cursor: "pointer",
         }}
+        onClick={() => {
+          if (currentUserNotification?.length)
+            markUserNotificationAsRead(receipientUser, notifications);
+        }}
       >
         <div style={{ display: "flex", gap: 5 }}>
           <Avatar alt="Remy Sharp" src="/file.svg" />
           <div>
-            <div>{receipientUser?.name}</div>
-            <div>Text Message</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              <div>{receipientUser?.name}</div>
+
+              <div style={isOnline ? styles : undefined}></div>
+            </div>
+
+            <div>{trucateText(lastestMessage?.text)}</div>
           </div>
         </div>
         <div>
-          <span
-          // style={isOnline ? styles : undefined}
-          >
-            {isOnline ? "online" : ""}
-          </span>
-          <div style={{ fontSize: "small" }}>12/12/12</div>
+          <div style={{ fontSize: "small" }}>
+            {convertDate(lastestMessage?.createdAt)}
+          </div>
           <div
             style={{
               background: "red",
@@ -56,7 +77,9 @@ const UserChat = ({ user, chat }: any) => {
               color: "white",
             }}
           >
-            2
+            {currentUserNotification?.length
+              ? currentUserNotification?.length
+              : ""}
           </div>
         </div>
       </div>

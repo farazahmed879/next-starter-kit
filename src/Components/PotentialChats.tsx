@@ -12,15 +12,23 @@ const PotentialChats = ({ user, createChat }: any) => {
     borderRadius: "62%",
     height: "5px",
     width: "5px",
-    position: "absolute",
+    position: "absolute"
   };
 
   return (
-    <div style={{ display: "flex", gap: 5, cursor: "pointer" }}>
+    <div
+      style={{
+        display: "grid",
+        cursor: "pointer",
+        gridTemplateColumns: "repeat(auto-fill, minmax(50px, 1fr))",
+        gap: "5px",
+      }}
+    >
       {potentialChats &&
         potentialChats.map((e: any, index: number) => (
           <Typography
-            component={"span"}
+            className="text-wrap"
+            component={"div"}
             key={index}
             onClick={() => createChat(user?._id, e?._id)}
             style={{
@@ -29,18 +37,19 @@ const PotentialChats = ({ user, createChat }: any) => {
               color: "white",
               borderRadius: "5px",
               padding: 3,
+              position: 'relative'
             }}
           >
             {e.name}
             <span
-              // style={
-              //   onlineUsers.some((i: any) => i.userId == e?._id)
-              //     ? styles
-              //     : undefined
-              // }
+              style={
+                onlineUsers.some((i: any) => i.userId == e?._id)
+                  ? styles
+                  : undefined
+              }
             >
-              {" "}
-              {onlineUsers.some((i: any) => i.userId == e?._id) ? "online" : ""}
+              {/* {" "}
+              {onlineUsers.some((i: any) => i.userId == e?._id) ? "online" : ""} */}
             </span>
           </Typography>
         ))}

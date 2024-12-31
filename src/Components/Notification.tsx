@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import Box from "@mui/material/Box";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -15,12 +15,17 @@ import { convertDate, unreadNotification } from "@/helper/helper";
 import { Notifications, User } from "@/helper/interface";
 import { AuthContext } from "@/context/AuthContext";
 
-export default function Notification({ }: {}) {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+export default function Notification() {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
-
-  const { notifications, userChats, allUsers, markAllNotificationAsRead, markNotificationAsRead } = useContext(ChatContext);
+  const {
+    notifications,
+    userChats,
+    allUsers,
+    markAllNotificationAsRead,
+    markNotificationAsRead,
+  } = useContext(ChatContext);
   const { user } = useContext<any>(AuthContext);
 
   const unReadNotifications: Notifications[] =
@@ -35,7 +40,6 @@ export default function Notification({ }: {}) {
     }
   );
 
-  // console.log("modifiedNotifications", modifiedNotifications);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -45,10 +49,7 @@ export default function Notification({ }: {}) {
   };
 
 
-  // console.log("notifications", notifications);
-
   const CountSpan = ({ noti = [] }: any) => {
-    // console.log("noti", noti);
     return <span style={style}>{noti?.length}</span>;
   };
 
@@ -98,6 +99,7 @@ export default function Notification({ }: {}) {
             elevation: 0,
             sx: {
               width: 300,
+              overflowY: "scroll",
               overflow: "visible",
               filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
               mt: 1.5,
@@ -126,7 +128,6 @@ export default function Notification({ }: {}) {
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
         <>
-
           {!!modifiedNotifications.length && (
             <>
               <MenuItem
@@ -137,16 +138,18 @@ export default function Notification({ }: {}) {
                 }}
               >
                 <Typography>Notifications</Typography>
-                <Typography sx={{ fontSize: "small" }} component={"h6"} onClick={() => markAllNotificationAsRead(notifications)}>
+                <Typography
+                  sx={{ fontSize: "small" }}
+                  component={"h6"}
+                  onClick={() => markAllNotificationAsRead(notifications)}
+                >
                   Mark all as read
                 </Typography>
               </MenuItem>
             </>
           )}
           {modifiedNotifications?.length ? (
-            modifiedNotifications.map((e: Notifications, key: number
-
-            ) => (
+            modifiedNotifications.map((e: Notifications, key: number) => (
               <MenuItem
                 key={key}
                 onClick={() => handleClose()}
@@ -155,12 +158,13 @@ export default function Notification({ }: {}) {
                 <ListItemIcon>
                   <Settings fontSize="small" />
                 </ListItemIcon>
-                <Typography component={"span"} onClick={() => markNotificationAsRead(e, userChats
-                  , user, notifications
-                )}>
-                  <Typography
-                    component={"span"}
-                  >{`${e.senderName} sent you a message`}</Typography>
+                <Typography
+                  component={"span"}
+                  onClick={() =>
+                    markNotificationAsRead(e, userChats, user, notifications)
+                  }
+                >
+                  <Typography component={"span"}>{`${e.message}`}</Typography>
                   <Typography component={"div"} sx={{ fontSize: "small" }}>
                     {convertDate(e.date)}
                   </Typography>
