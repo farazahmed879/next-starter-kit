@@ -3,3 +3,11 @@ export const FORMMODES = {
   ADD: 2,
   EDIT: 3
 };
+
+
+export const ROLE = {
+  NORMAL: "NORMAL",
+  AGENT: "AGENT",
+  ADMIN: "ADMIN"
+};
+

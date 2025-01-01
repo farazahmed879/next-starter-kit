@@ -24,6 +24,7 @@ import ContactsIcon from "@mui/icons-material/Contacts";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import ProductionQuantityLimitsIcon from "@mui/icons-material/ProductionQuantityLimits";
 import Link from "next/link";
+import ChatIcon from '@mui/icons-material/Chat';
 
 interface SidebarProps {
   openState: boolean;
@@ -82,7 +83,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     ...theme.mixins.toolbar,
   }));
 
-  const items = ["dashboard", "products", "user", "chat"];
+  const items = ["dashboard", "user", "chat"];
   const icons: Record<string, JSX.Element> = {
     dashboard: <DashboardIcon />,
     contact: <ContactsIcon />,
@@ -91,6 +92,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     products: <ProductionQuantityLimitsIcon />,
     projects: <AccountTreeIcon />,
     user: <PersonIcon />,
+    chat: <ChatIcon />,
   };
 
   const routes: Record<string, string> = {
@@ -117,7 +119,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         </DrawerHeader>
         <Divider />
         <List>
-          {items.map((text: string) => (
+          {items.filter(i=> i != 'user').map((text: string) => (
             <ListItem key={text} disablePadding sx={{ display: "block" }}>
               <Link href={routes[text]} passHref>
                 <ListItemButton

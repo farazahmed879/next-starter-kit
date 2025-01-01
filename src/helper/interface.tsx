@@ -2,18 +2,18 @@ import { ReactNode } from "react";
 
 export interface Column {
   id:
-    | "name"
-    | "image"
-    | "contact"
-    | "action"
-    | "department"
-    | "description"
-    | "file"
-    | "duration"
-    | "email"
-    | "message"
-    | "location"
-    | "role";
+  | "name"
+  | "image"
+  | "contact"
+  | "action"
+  | "department"
+  | "description"
+  | "file"
+  | "duration"
+  | "email"
+  | "message"
+  | "location"
+  | "role";
   label: string;
   minWidth?: number;
   align?: "right";
@@ -101,4 +101,9 @@ export interface Message {
   text: string;
   updatedAt: string;
   _id: string;
+}
+
+export interface OnlineUser {
+  userId: string,
+  socketId: string
 }

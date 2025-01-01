@@ -1,6 +1,11 @@
 "use client";
 import { createContext, useCallback, useEffect, useRef, useState } from "react";
-import { baseUrl, ApiCall } from "../helper/helper";
+import {
+  baseUrl,
+  ApiCall,
+  playMsgSound,
+  playNotificationSound,
+} from "../helper/helper";
 import { useSession } from "next-auth/react";
 
 import { io } from "socket.io-client";
@@ -25,7 +30,7 @@ export const ChatContextProvider = ({ children, user }) => {
   const getUserChat = async () => {
     if (user?._id) {
       setIsLoading(true);
-      const response = await ApiCall(`chats/${user?._id}`);
+      const response = await ApiCall(`chats/${user?._id}`, "get");
       setIsLoading(false);
       if (!response) return;
       setUserChats(response?.data);
@@ -35,7 +40,7 @@ export const ChatContextProvider = ({ children, user }) => {
 
   const getMessages = async () => {
     setIsMessageLoading(true);
-    const response = await ApiCall(`messages/${currentChat?._id}`);
+    const response = await ApiCall(`messages/${currentChat?._id}`, "get");
     setIsMessageLoading(false);
     if (!response) return;
     setMessages(response?.data);
@@ -117,7 +122,7 @@ export const ChatContextProvider = ({ children, user }) => {
   const getNotifications = async () => {
     if (user?._id) {
       setIsLoading(true);
-      const response = await ApiCall(`notifications/${user?._id}`);
+      const response = await ApiCall(`notifications/${user?._id}`, "get");
       setIsLoading(false);
       if (!response) return;
 
@@ -129,8 +134,11 @@ export const ChatContextProvider = ({ children, user }) => {
 
   const getUsers = async () => {
     const token = session?.user?.token;
+    console.log("user aaa", user);
+    const role =
+      user.role == "NORMAL" ? "AGENT" : user.role == "AGENT" ? "NORMAL" : "";
     setIsLoading(true);
-    const response = await ApiCall(`users/`, "get", undefined, {
+    const response = await ApiCall(`users/${role}`, "get", undefined, {
       Authorization: `Bearer ${token}`,
     });
     setIsLoading(false);
@@ -158,10 +166,16 @@ export const ChatContextProvider = ({ children, user }) => {
     const response = await ApiCall(url, "post", data, {
       Authorization: `Bearer ${session?.user?.token}`,
     });
+    console.log("response", response);
+  };
+
+  const closeChat = () => {
+    setCurrentChat(null);
+    currentChatRef.current = null;
   };
 
   useEffect(() => {
-    if (!userChats || !userChats?.length) return;
+    // if (!userChats || !userChats?.length) return;
     getUsers();
   }, [userChats]);
 
@@ -222,6 +236,7 @@ export const ChatContextProvider = ({ children, user }) => {
       if (currentChatRef.current?._id !== res.chatId) return;
 
       setMessages((prev) => [...prev, res]);
+      playMsgSound();
     });
 
     socket.on("getNotification", (res) => {
@@ -232,6 +247,7 @@ export const ChatContextProvider = ({ children, user }) => {
         setNotifications((prev) => [{ ...res, isRead: true }, ...prev]);
       } else {
         setNotifications((prev) => [...prev, res]);
+        playNotificationSound();
       }
     });
 
@@ -244,8 +260,6 @@ export const ChatContextProvider = ({ children, user }) => {
   useEffect(() => {
     currentChatRef.current = currentChat; // update the ref whenever currentChat changes
   }, [currentChat]);
-
-  console.log("meta notifications", notifications);
 
   return (
     <ChatContext.Provider
@@ -265,6 +279,7 @@ export const ChatContextProvider = ({ children, user }) => {
         markAllNotificationAsRead,
         markNotificationAsRead,
         markUserNotificationAsRead,
+        closeChat,
       }}
     >
       {children}

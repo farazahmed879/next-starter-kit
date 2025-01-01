@@ -63,7 +63,7 @@ const SignUpContainer = styled(Stack)(({ theme }) => ({
   },
 }));
 
-export default function SignUp({}: {}) {
+export default function SignUp() {
   const { data: session, status: sessionStatus } = useSession();
   const router = useRouter();
   const { registerInfo, updateregisterInfo, isLoading } =

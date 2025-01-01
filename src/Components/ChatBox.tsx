@@ -5,11 +5,13 @@ import { useContext, useEffect, useRef, useState } from "react";
 import InputEmoji from "react-input-emoji";
 import CustomButton from "./CustomButton";
 import { convertDate } from "@/helper/helper";
+import { Typography } from "@mui/material";
+import CloseIcon from '@mui/icons-material/Close';
 
 
 const ChatBox = () => {
   const { user } = useContext<any>(AuthContext);
-  const { currentChat, messages, isMessageLoading, sendTextMessage } =
+  const { currentChat, messages, isMessageLoading, sendTextMessage, closeChat } =
     useContext(ChatContext);
   const { receipientUser } = useFetchRecipientUser(currentChat, user);
 
@@ -24,7 +26,7 @@ const ChatBox = () => {
     scroll.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  if (!receipientUser)
+  if (!receipientUser || !currentChat)
     return (
       <>
         <p style={{ textAlign: "center", width: "100%" }}>
@@ -49,9 +51,12 @@ const ChatBox = () => {
           textAlign: "center",
           padding: "10px",
           borderRadius: "5px 5px 0px 0px",
+          display: 'flex',
+          justifyContent: 'space-between'
         }}
       >
         {receipientUser?.name}
+        <Typography component={'span'} onClick={() => closeChat()}><CloseIcon/></Typography>
       </div>
       <div
         style={{

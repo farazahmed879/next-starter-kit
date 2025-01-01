@@ -16,6 +16,7 @@ export const ApiCall = async (
   header?: any
 ): Promise<any> => {
   try {
+    if (!method) return
     // const token = session?.user?.token;
     url = `${baseUrl}${url}`;
     const config: AxiosRequestConfig = {
@@ -67,3 +68,18 @@ export const ArrowBack = ArrowBackIcon;
 export const convertDate = (date: any) => {
   return moment(date).format("MMMM Do YYYY, h:mm:ss a");
 };
+
+
+export const playNotificationSound = () => {
+  const audio = new Audio('/long-pop.wav');
+  audio.loop = false; // Set to loop the audio if required
+  audio.play();
+};
+
+export const playMsgSound = () => {
+  const audio = new Audio('/pop.mp3');
+  audio.loop = false; // Set to loop the audio if required
+  audio.play();
+};
+
+

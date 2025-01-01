@@ -40,9 +40,9 @@ export const AuthConextProvider: React.FC<AuthContextProviderProps> = ({
     try {
       setIsloading(true);
       const response = await ApiCall("users", "post", data);
-
+      debugger
       setIsloading(false);
-      if (response.data.message === "User Created Successfully") {
+      if (response?.data?.message === "User Created Successfully") {
         const res = await SweetAlert(
           "Success",
           "success",
@@ -58,8 +58,7 @@ export const AuthConextProvider: React.FC<AuthContextProviderProps> = ({
         console.log("Error:", errorData);
       }
     } catch (error) {
-      console.error("Network error", error);
-      alert("Failed to submit form, please try again");
+      console.log("Network error", error);
     }
   };
 
