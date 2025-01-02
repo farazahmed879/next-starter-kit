@@ -5,7 +5,7 @@ import { Column } from "@/helper/interface";
 import React, { useEffect } from "react";
 import { Box, Typography } from "@mui/material";
 import CustomLoader from "@/Components/CustomLoader";
-import { ApiCall, SweetAlert } from "@/helper/helper";
+import { apiCall, SweetAlert } from "@/helper/helper";
 
 import { useRouter } from "next/navigation";
 
@@ -62,7 +62,7 @@ const Product: React.FC = () => {
       setIsLoading(true);
       let url = "product";
       if (a) url += `?key=${a}`;
-      const data = await ApiCall(url, "get");
+      const data = await apiCall(url, "get");
       setIsLoading(false);
       if (data) return setData(data?.data.data);
       SweetAlert("Error", "error", "Something went wrong");

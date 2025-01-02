@@ -3,8 +3,14 @@ import CustomButton from "@/Components/CustomButton";
 import CustomInput from "@/Components/CustomInput";
 import { Grid2 } from "@mui/material";
 import { useForm } from "react-hook-form";
-
+import { SweetAlert, apiCall, baseUrl, postMethod } from "@/helper/helper";
+import Link from "next/link";
+import CustomIcon from "@/Components/CustomIcon";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
+import { ROLES } from "@/helper/enum";
 export default function Users() {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   type Inputs = {
     name: string;
     email: string;
@@ -13,35 +19,150 @@ export default function Users() {
     file: string;
   };
 
+  const defaultValues = {
+    name: "",
+    email: "",
+    role: "",
+    password: "",
+  };
+
+  const router = useRouter();
   const {
     control,
     formState: { errors },
     register,
     handleSubmit,
     watch,
-  } = useForm<Inputs>();
+    setValue,
+  } = useForm<Inputs>({ defaultValues });
 
-  const createNewUser = async (data: Inputs) => {
+  const searchParams = useSearchParams();
+
+  const id = searchParams.get("id");
+
+  const handleEdit = async () => {
+    const url = `http://localhost:8080/users/id/${id}`;
+
+    const response = await apiCall(url, "get");
+
+    console.log("This is response", response);
+
+    const user = response.data?.data;
+
+    setValue("name", user.name);
+    setValue("email", user.email);
+    setValue("role", user.role);
+  };
+
+  useEffect(() => {
+    if (id) {
+      handleEdit();
+    }
+  }, [id]);
+
+  // const createNewUser = async (data: any) => {
+  //   try {
+  //     const result = await SweetAlert(
+  //       "Are you sure?",
+  //       "info",
+  //       "You are about to add a New User",
+  //       true,
+  //       `Yes!`,
+  //       "No"
+  //     );
+
+  //     let url = "http://localhost:8080/users";
+  //     const payload = {
+  //       name: data.name,
+  //       password: data.password,
+  //       email: data.email,
+  //       role: data.role,
+  //     };
+
+  //     console.log("Payload being sent:", payload);
+
+  //     const response = await postMethod(`${baseUrl}/users`, payload);
+
+  //     if ((response && response.status === 201) || response.status === 200) {
+  //       const successMessage = await SweetAlert(
+  //         "User Created",
+  //         "success",
+  //         "",
+  //         false,
+  //         "OK"
+  //       );
+
+  //       if (successMessage.isConfirmed && result.isConfirmed)
+  //         router.push("/user");
+  //     } else {
+  //       const errorData = response?.data || {};
+  //       console.error("Error response data:", errorData);
+  //       SweetAlert(
+  //         "Failed to create",
+  //         "error",
+  //         errorData.message || "Unknown error",
+  //         false,
+  //         "OK"
+  //       );
+  //     }
+  //   } catch (error) {
+  //     console.error("Network error:", error);
+  //     SweetAlert("Failed to create", "error", "", false, "OK");
+  //   }
+  // };
+
+  const message2 = id
+    ? "You are about to update the User "
+    : "You are about to add a new User";
+
+  const buttonMessage = id ? "Update" : "Add";
+
+  const createNewUser = async (data: any) => {
     try {
-      const response = await fetch("http://localhost:8080/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      const result = await SweetAlert(
+        "Are you sure?",
+        "info",
+        message2,
+        true,
+        `Yes, ${buttonMessage}!`,
+        "No"
+      );
+      setIsLoading(true);
 
-      if (response.ok) {
-        alert("New user created!");
+      if (!result.isConfirmed) return;
+
+      if (id) data.id = id;
+
+      let url = id
+        ? `http://localhost:8080/users/${id}`
+        : `http://localhost:8080/users`;
+      let method = id ? "PUT" : "POST";
+
+      setIsLoading(false);
+
+      const response = await apiCall(url, method, data);
+
+      let message = id ? "User Updated" : "User Added";
+      console.log("This is repsponse status", response.status);
+      if (response.status === 201 || response.status === 200) {
+        const successMessage = await SweetAlert(
+          "Success",
+          "success",
+          message,
+          false,
+          "OK"
+        );
+        if (result.isConfirmed && successMessage.isConfirmed)
+          router.push("/user");
       } else {
-        const errorData = await response.json();
-        console.error("Error:", errorData);
+        SweetAlert("Error", "error", "Something went wrong", false, "OK");
       }
     } catch (error) {
-      console.error("Network error:", error);
-      alert("Failed to add user!");
+      console.error(error);
+      alert("Failed to add/update User");
     }
   };
+
   return (
     <>
       <div
@@ -54,10 +175,23 @@ export default function Users() {
           gap: "2rem",
         }}
       >
-        <div>
-          <h2>New User</h2>
-        </div>
+        <div
+          style={{
+            display: "flex",
+            width: "100%",
+            alignItems: "center",
+          }}
+        >
+          <CustomIcon
+            name="ArrowBack"
+            color="primary"
+            onClick={() => {
+              router.push("/user");
+            }}
+          />
 
+          <h2 style={{ paddingLeft: "1rem" }}>User Details</h2>
+        </div>
         <form onSubmit={handleSubmit(createNewUser)} style={{}}>
           <Grid2 container spacing={4}>
             <Grid2 size={6}>
@@ -80,6 +214,7 @@ export default function Users() {
                   name="email"
                   errors={errors}
                   type="email"
+                  disabled={!!id} // Disable the email input if id exists
                 />
               </div>
             </Grid2>
@@ -92,23 +227,22 @@ export default function Users() {
                   gap: "1rem",
                 }}
               >
-                <CustomInput
-                  label="password"
-                  control={control}
-                  name="password"
-                  errors={errors}
-                  type="password"
-                />
+                {!id && ( // Hide the password input if id exists
+                  <CustomInput
+                    label="Password"
+                    control={control}
+                    name="password"
+                    errors={errors}
+                    type="password"
+                  />
+                )}
 
                 <CustomInput
                   label="Role"
                   control={control}
                   name="role"
                   errors={errors}
-                  options={[
-                    { label: "Admin", value: "Admin" },
-                    { label: "Normal", value: "Normal" },
-                  ]}
+                  options={ROLES}
                 />
               </div>
             </Grid2>
@@ -116,7 +250,7 @@ export default function Users() {
           <div style={{ marginTop: "2rem" }}>
             <CustomButton
               variant="contained"
-              text="Add"
+              text={id ? "Update" : "Add"}
               color="success"
               buttonType="submit"
             />

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ApiCall } from "../helper/helper";
+import { apiCall } from "../helper/helper";
 import { Chat, UseFetchRecipientUserReturn, User } from "@/helper/interface";
 
 export const useFetchRecipientUser = (
@@ -17,7 +17,7 @@ export const useFetchRecipientUser = (
 
     try {
       const url = `users/id/${receipientId}`;
-      const response = await ApiCall(url, "get");
+      const response = await apiCall(url, "get");
       if (response) {
         setReceipientUser(response?.data?.data);
       } else {

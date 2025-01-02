@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useCallback, useEffect, useRef, useState } from "react";
-import { baseUrl, ApiCall } from "../helper/helper";
+import { baseUrl, apiCall } from "../helper/helper";
 import { useSession } from "next-auth/react";
 
 import { io } from "socket.io-client";
@@ -27,7 +27,7 @@ export const ChatContextProvider = ({ children, user }) => {
   const getUserChat = async () => {
     if (user?._id) {
       setIsLoading(true);
-      const response = await ApiCall(`chats/${user?._id}`);
+      const response = await apiCall(`chats/${user?._id}`);
       setIsLoading(false);
       if (!response) return;
       setUserChats(response?.data);
@@ -37,7 +37,7 @@ export const ChatContextProvider = ({ children, user }) => {
 
   const getMessages = async () => {
     setIsMessageLoading(true);
-    const response = await ApiCall(`messages/${currentChat?._id}`);
+    const response = await apiCall(`messages/${currentChat?._id}`);
     setIsMessageLoading(false);
     if (!response) return;
     setMessages(response?.data);
@@ -57,7 +57,7 @@ export const ChatContextProvider = ({ children, user }) => {
         senderId: senderId,
         text: textMessage,
       };
-      const response = await ApiCall(url, "post", reqData, {
+      const response = await apiCall(url, "post", reqData, {
         Authorization: `Bearer ${session?.user?.token}`,
       });
       if (!response) return console.log("Something went wrong");
@@ -81,7 +81,7 @@ export const ChatContextProvider = ({ children, user }) => {
   const getUsers = async () => {
     const token = session?.user?.token;
     setIsLoading(true);
-    const response = await ApiCall(`users/`, "get", undefined, {
+    const response = await apiCall(`users/`, "get", undefined, {
       Authorization: `Bearer ${token}`,
     });
     setIsLoading(false);

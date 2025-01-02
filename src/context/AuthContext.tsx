@@ -1,4 +1,4 @@
-import { ApiCall, SweetAlert } from "@/helper/helper";
+import { apiCall, SweetAlert } from "@/helper/helper";
 import { useRouter } from "next/navigation";
 import { createContext, useCallback, useState, ReactNode } from "react";
 import { useSession } from "next-auth/react";
@@ -39,7 +39,7 @@ export const AuthConextProvider: React.FC<AuthContextProviderProps> = ({
   const registerUser = async (data: RegisterInfo) => {
     try {
       setIsloading(true);
-      const response = await ApiCall("users", "post", data);
+      const response = await apiCall("users", "post", data);
 
       setIsloading(false);
       if (response.data.message === "User Created Successfully") {

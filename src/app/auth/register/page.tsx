@@ -17,7 +17,7 @@ import Grid from "@mui/material/Grid2";
 import CustomButton from "@/Components/CustomButton";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { ApiCall, SweetAlert } from "@/helper/helper";
+import { apiCall, SweetAlert } from "@/helper/helper";
 import { useContext } from "react";
 import { AuthContext } from "@/context/AuthContext";
 
