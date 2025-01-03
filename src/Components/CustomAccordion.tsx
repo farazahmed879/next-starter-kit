@@ -15,7 +15,9 @@ export default function CustomAccordion({ data = [] }: any) {
             aria-controls={`${e?.id}-content`}
             id={`${e?.id}-header`}
           >
-            <Typography component="span">{e?.title}</Typography>
+            <Typography component="span">
+              {e?.title} {e?.extraProp}
+            </Typography>
           </AccordionSummary>
           <AccordionDetails>{e?.data}</AccordionDetails>
         </Accordion>
