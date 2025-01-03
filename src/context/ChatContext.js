@@ -1,12 +1,12 @@
 "use client";
 import { createContext, useCallback, useEffect, useRef, useState } from "react";
 import {
-  ApiCall,
+  apiCall,
   playMsgSound,
   playNotificationSound,
   SweetAlert,
   baseUrl,
-  apiCall,
+  
 } from "../helper/helper";
 import { useSession } from "next-auth/react";
 
@@ -125,7 +125,7 @@ export const ChatContextProvider = ({ children, user }) => {
   const getNotifications = async () => {
     if (user?._id) {
       setIsLoading(true);
-      const response = await ApiCall(`notifications/${user?._id}`, "get");
+      const response = await apiCall(`notifications/${user?._id}`, "get");
       setIsLoading(false);
       if (!response) return;
 
@@ -166,7 +166,7 @@ export const ChatContextProvider = ({ children, user }) => {
     const role =
       user.role == "NORMAL" ? "AGENT" : user.role == "AGENT" ? "NORMAL" : "";
     setIsLoading(true);
-    const response = await ApiCall(`requests`, "get", undefined, {
+    const response = await apiCall(`requests`, "get", undefined, {
       Authorization: `Bearer ${token}`,
     });
     setIsLoading(false);
@@ -179,7 +179,7 @@ export const ChatContextProvider = ({ children, user }) => {
     url = "notifications",
     data = {}
   ) => {
-    const response = await ApiCall(url, "post", data, {
+    const response = await apiCall(url, "post", data, {
       Authorization: `Bearer ${session?.user?.token}`,
     });
     console.log("response", response);
@@ -187,7 +187,7 @@ export const ChatContextProvider = ({ children, user }) => {
 
   const createRequest = useCallback(
     async (url = "requests", data = {}, setChatInput) => {
-      const response = await ApiCall(url, "post", data, {
+      const response = await apiCall(url, "post", data, {
         Authorization: `Bearer ${session?.user?.token}`,
       });
       if (!response) return;
