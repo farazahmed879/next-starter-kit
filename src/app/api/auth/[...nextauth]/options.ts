@@ -18,6 +18,7 @@ export const options: NextAuthOptions = {
         },
       },
       async authorize(credentials) {
+        console.log("credentials", credentials);
         //where I will get the user data from either database or from somewhere else
 
         //https://next-auth.js.org/configuration/providers/credentials use this link to check it

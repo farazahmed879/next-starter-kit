@@ -33,7 +33,6 @@ export const ChatContextProvider = ({ children, user }) => {
     if (user?._id) {
       setIsLoading(true);
       const response = await apiCall(`chats/${user?._id}`, "get");
-      debugger;
       setIsLoading(false);
       if (!response) return;
       setUserChats(response?.data);
