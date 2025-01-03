@@ -11,6 +11,7 @@ import { ROLE } from "@/helper/constant";
 import { OnlineUser, UserRequest } from "@/helper/interface";
 import CustomAccordion from "@/Components/CustomAccordion";
 import CustomCompoentBox from "@/Components/CustomCommentBox";
+import CustomChat from "@/Components/CustomChat";
 
 const styles = {
   padding: "10px",
@@ -68,12 +69,12 @@ const Chat = () => {
   };
 
   const accordionData = [
-    { id: "panel1", title: `Requests (${requests?.length || 0})`, data: <RequestCom /> },
-    { id: "users", title: "Users", data: <PotentialUsersCom /> },
+    { id: "panel1", title: "Requests", data: <RequestCom /> },
+    // { id: "users", title: "Users", data: <PotentialUsersCom /> },
     { id: "chats", title: "Chats", data: <UserChatsCom /> },
   ];
 
-  console.log("accordionData", accordionData);
+  console.log("userChats", userChats);
 
   return (
     <>
@@ -85,32 +86,39 @@ const Chat = () => {
             padding: 1,
             borderRadius: 2,
             width: "30%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: 'space-between'
           }}
         >
-          <>{isLoading ? "...loading chats" : ""}</>
-          {user?.role == ROLE.NORMAL && (
-            <Typography sx={styles} component={"div"}>
-              {` Online Agents `}
-              <span
-                style={{
-                  background: "green",
-                  height: "10px",
-                  width: "20px",
-                  borderRadius: "50px",
-                  color: "white",
-                }}
-              >
-                {
-                  onlineUsers.filter(
-                    (i: OnlineUser) =>
-                      i.userId != user?._id && i.role != "ADMIN"
-                  )?.length
-                }
-              </span>
-            </Typography>
-          )}
+          <div>
+            <>{isLoading ? "...loading chats" : ""}</>
+            {user?.role == ROLE.NORMAL && (
+              <Typography sx={styles} component={"div"}>
+                {` Online Agents `}
+                <span
+                  style={{
+                    background: "green",
+                    height: "10px",
+                    width: "20px",
+                    borderRadius: "50px",
+                    color: "white",
+                  }}
+                >
+                  {
+                    onlineUsers.filter(
+                      (i: OnlineUser) =>
+                        i.userId != user?._id && i.role != "ADMIN"
+                    )?.length
+                  }
+                </span>
+              </Typography>
+            )}
 
-          <CustomAccordion data={accordionData} />
+            <CustomAccordion data={accordionData} />
+          </div>
+
+          <CustomChat user={user} createChat={createChat} />
 
           {/* {userChats && userChats?.data?.map((e: any) => <>chato</>)} */}
         </Grid2>

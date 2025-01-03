@@ -6,7 +6,6 @@ import {
   playNotificationSound,
   SweetAlert,
   baseUrl,
-  
 } from "../helper/helper";
 import { useSession } from "next-auth/react";
 
@@ -33,7 +32,7 @@ export const ChatContextProvider = ({ children, user }) => {
   const getUserChat = async () => {
     if (user?._id) {
       setIsLoading(true);
-      const response = await apiCall(`chats/${user?._id}`);
+      const response = await apiCall(`chats/${user?._id}`, "get");
       setIsLoading(false);
       if (!response) return;
       setUserChats(response?.data);
@@ -43,7 +42,7 @@ export const ChatContextProvider = ({ children, user }) => {
 
   const getMessages = async () => {
     setIsMessageLoading(true);
-    const response = await apiCall(`messages/${currentChat?._id}`);
+    const response = await apiCall(`messages/${currentChat?._id}`, "get");
     setIsMessageLoading(false);
     if (!response) return;
     setMessages(response?.data);
