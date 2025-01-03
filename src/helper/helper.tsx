@@ -4,34 +4,31 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useSession } from "next-auth/react";
 import { jwtDecode } from "jwt-decode";
 import { Notifications } from "./interface";
-import moment from 'moment'
+import moment from "moment";
 // const { data: session, status: sessionStatus } = useSession();
 
 export const baseUrl = "http://localhost:8080/";
 
-export const ApiCall = async (
+export const apiCall = async (
   url: string,
-  method: "post" | "put" | "get" | "delete" | "patch",
+  method: any,
   payload?: any,
-  header?: any
+  headers?: Record<string, string>
 ): Promise<any> => {
   try {
-    if (!method) return
+    if (!method) return;
     // const token = session?.user?.token;
     url = `${baseUrl}${url}`;
     const config: AxiosRequestConfig = {
       url,
       method: method as AxiosRequestConfig["method"],
       data: payload,
-      headers: {
-        "Content-Type": "application/json",
-        ...header,
-      },
+      headers: headers || { "Content-Type": "application/json" },
     };
 
-    if (method === "post" || method === "put") {
-      config.data = payload;
-    }
+    // if (method === "POST" || method === "PUT") {
+    //   config.data = payload;
+    // }
 
     const response = await axios.request(config);
 
@@ -69,17 +66,40 @@ export const convertDate = (date: any) => {
   return moment(date).format("MMMM Do YYYY, h:mm:ss a");
 };
 
-
 export const playNotificationSound = () => {
-  const audio = new Audio('/long-pop.wav');
+  const audio = new Audio("/long-pop.wav");
   audio.loop = false; // Set to loop the audio if required
   audio.play();
 };
 
 export const playMsgSound = () => {
-  const audio = new Audio('/pop.mp3');
+  const audio = new Audio("/pop.mp3");
   audio.loop = false; // Set to loop the audio if required
   audio.play();
 };
 
+export const postMethod = async (url: string, body: any) => {
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
 
+  const data = await response.json();
+
+  if (!response.ok) {
+    let message;
+
+    if (data?.message) {
+      message = data.message;
+    } else {
+      message = data;
+    }
+
+    return { error: true, message };
+  }
+
+  return { status: response.status, data };
+};

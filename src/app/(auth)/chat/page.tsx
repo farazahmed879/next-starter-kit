@@ -5,7 +5,7 @@ import { useContext } from "react";
 import { Grid2, Typography } from "@mui/material";
 import UserChat from "@/Components/UserChat";
 import PotentialChats from "@/Components/PotentialChats";
-import { ApiCall } from "@/helper/helper";
+import { apiCall } from "@/helper/helper";
 import ChatBox from "@/Components/ChatBox";
 import { ROLE } from "@/helper/constant";
 import { OnlineUser, UserRequest } from "@/helper/interface";
@@ -35,7 +35,7 @@ const Chat = () => {
 
   const createChat = async (firstId: number, secondId: number) => {
     const url = "chats";
-    const response = await ApiCall(url, "post", { firstId, secondId });
+    const response = await apiCall(url, "post", { firstId, secondId });
     if (!response) return console.log("something went wrong");
 
     let chats: any = [];

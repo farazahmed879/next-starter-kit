@@ -3,7 +3,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import CustomInput from "@/Components/CustomInput";
 import { Grid2 } from "@mui/material";
 import CustomButton from "@/Components/CustomButton";
-import { ApiCall, SweetAlert } from "@/helper/helper";
+import { apiCall, SweetAlert } from "@/helper/helper";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 export default function ProductForm() {
@@ -32,7 +32,7 @@ export default function ProductForm() {
   const submitProductData = async (data: Inputs) => {
     try {
       setIsLoading(true);
-      const response = await ApiCall(
+      const response = await apiCall(
         "http://localhost:8080/product",
         "post",
         data
