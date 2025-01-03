@@ -2,18 +2,18 @@ import { ReactNode } from "react";
 
 export interface Column {
   id:
-  | "name"
-  | "image"
-  | "contact"
-  | "action"
-  | "department"
-  | "description"
-  | "file"
-  | "duration"
-  | "email"
-  | "message"
-  | "location"
-  | "role";
+    | "name"
+    | "image"
+    | "contact"
+    | "action"
+    | "department"
+    | "description"
+    | "file"
+    | "duration"
+    | "email"
+    | "message"
+    | "location"
+    | "role";
   label: string;
   minWidth?: number;
   align?: "right";
@@ -91,7 +91,7 @@ export interface Notifications {
   isRead: boolean;
   date: string;
   senderName?: string;
-  message?: string
+  message?: string;
 }
 
 export interface Message {
@@ -104,6 +104,16 @@ export interface Message {
 }
 
 export interface OnlineUser {
-  userId: string,
-  socketId: string
+  userId: string;
+  socketId: string;
+  role: string;
+}
+
+export interface UserRequest {
+  createdAt: string;
+  isAccepted: boolean;
+  senderId: User;
+  text: string;
+  updatedAt: string;
+  _id: string;
 }

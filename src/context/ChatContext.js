@@ -5,6 +5,7 @@ import {
   ApiCall,
   playMsgSound,
   playNotificationSound,
+  SweetAlert,
 } from "../helper/helper";
 import { useSession } from "next-auth/react";
 
@@ -24,6 +25,7 @@ export const ChatContextProvider = ({ children, user }) => {
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
+  const [requests, setRequests] = useState([]);
   const currentChatRef = useRef(currentChat);
   const { data: session, status: sessionStatus } = useSession();
 
@@ -134,7 +136,6 @@ export const ChatContextProvider = ({ children, user }) => {
 
   const getUsers = async () => {
     const token = session?.user?.token;
-    console.log("user aaa", user);
     const role =
       user.role == "NORMAL" ? "AGENT" : user.role == "AGENT" ? "NORMAL" : "";
     setIsLoading(true);
@@ -159,6 +160,20 @@ export const ChatContextProvider = ({ children, user }) => {
     setAllUsers(response?.data?.data);
   };
 
+  const getRequests = async () => {
+    const token = session?.user?.token;
+    const role =
+      user.role == "NORMAL" ? "AGENT" : user.role == "AGENT" ? "NORMAL" : "";
+    setIsLoading(true);
+    const response = await ApiCall(`requests`, "get", undefined, {
+      Authorization: `Bearer ${token}`,
+    });
+    setIsLoading(false);
+    if (!response) return;
+    console.log("getRequests", response);
+    setRequests(response?.data);
+  };
+
   const createOrMarkNotificationAsReadApi = async (
     url = "notifications",
     data = {}
@@ -168,6 +183,18 @@ export const ChatContextProvider = ({ children, user }) => {
     });
     console.log("response", response);
   };
+
+  const createRequest = useCallback(
+    async (url = "requests", data = {}, setChatInput) => {
+      const response = await ApiCall(url, "post", data, {
+        Authorization: `Bearer ${session?.user?.token}`,
+      });
+      if (!response) return;
+      socket.emit("addNewRequest", response?.data);
+      SweetAlert("Success", "success", "Request Submited", undefined, "OK");
+      setChatInput("");
+    }
+  );
 
   const closeChat = () => {
     setCurrentChat(null);
@@ -183,6 +210,7 @@ export const ChatContextProvider = ({ children, user }) => {
     if (!user) return;
     getUserChat();
     getNotifications();
+    if (user?.role != "NORMAL") getRequests();
   }, [user]);
 
   useEffect(() => {
@@ -198,18 +226,6 @@ export const ChatContextProvider = ({ children, user }) => {
       newSocket.disconnect();
     };
   }, [user]);
-
-  useEffect(() => {
-    if (socket == null) return;
-    socket.emit("addNewUser", user?._id);
-    socket.on("getOnlneUsers", (res) => {
-      setOnlineUsers(res);
-    });
-
-    return () => {
-      socket.off("getOnlneUsers");
-    };
-  }, [socket]);
 
   useEffect(() => {
     if (!socket) return;
@@ -251,9 +267,19 @@ export const ChatContextProvider = ({ children, user }) => {
       }
     });
 
+    socket.emit("addNewUser", user);
+    socket.on("getOnlneUsers", (res) => {
+      setOnlineUsers(res);
+    });
+
+    socket.on("getRequest", (res) => {
+      setRequests((prev) => [...prev, res]);
+    });
+
     return () => {
       socket.off("getMessage");
       socket.off("getNotification");
+      socket.off("getOnlneUsers");
     };
   }, [socket]);
 
@@ -280,6 +306,8 @@ export const ChatContextProvider = ({ children, user }) => {
         markNotificationAsRead,
         markUserNotificationAsRead,
         closeChat,
+        createRequest,
+        requests,
       }}
     >
       {children}

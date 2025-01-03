@@ -8,14 +8,16 @@ import PotentialChats from "@/Components/PotentialChats";
 import { ApiCall } from "@/helper/helper";
 import ChatBox from "@/Components/ChatBox";
 import { ROLE } from "@/helper/constant";
-import { OnlineUser } from "@/helper/interface";
+import { OnlineUser, UserRequest } from "@/helper/interface";
+import CustomAccordion from "@/Components/CustomAccordion";
+import CustomCompoentBox from "@/Components/CustomCommentBox";
 
 const styles = {
-  padding: '10px',
-  fontSize: 'large',
-  color: 'green',
-  fontFamily: 'serif',
-}
+  padding: "10px",
+  fontSize: "large",
+  color: "green",
+  fontFamily: "serif",
+};
 
 const Chat = () => {
   const {
@@ -25,8 +27,10 @@ const Chat = () => {
     updateCurrentChat,
     isMessageLoading,
     messages,
-    onlineUsers
+    onlineUsers,
+    requests,
   } = useContext(ChatContext);
+
   const { user } = useContext<any>(AuthContext);
 
   const createChat = async (firstId: number, secondId: number) => {
@@ -42,8 +46,34 @@ const Chat = () => {
     setUserChats(chats);
   };
 
-  console.log("user", user)
-  console.log("onlineusers", onlineUsers)
+  const RequestCom = () => {
+    return <CustomCompoentBox data={requests} />;
+  };
+
+  const UserChatsCom = () => {
+    // return <CustomCompoentBox data={userChats} />;
+    return (
+      <>
+        {userChats?.map((chat: any, index: number) => (
+          <div key={index} onClick={() => updateCurrentChat(chat)}>
+            <UserChat user={user} chat={chat} />
+          </div>
+        ))}
+      </>
+    );
+  };
+
+  const PotentialUsersCom = () => {
+    return <PotentialChats user={user} createChat={createChat} />;
+  };
+
+  const accordionData = [
+    { id: "panel1", title: "Requests", data: <RequestCom /> },
+    { id: "users", title: "Users", data: <PotentialUsersCom /> },
+    { id: "chats", title: "Chats", data: <UserChatsCom /> },
+  ];
+
+  console.log("accordionData", accordionData);
 
   return (
     <>
@@ -58,16 +88,29 @@ const Chat = () => {
           }}
         >
           <>{isLoading ? "...loading chats" : ""}</>
-          {user?.role != ROLE.NORMAL ?
-            <PotentialChats user={user} createChat={createChat} /> :
-            <Typography sx={styles} component={'div'}>{` Online Agents `}<span style={{ background: 'green', height: '10px', width: '20px', borderRadius: '50px', color: 'white' }}>{onlineUsers.filter((i: OnlineUser) => i.userId != user?._id)?.length}</span></Typography>
-          }
+          {user?.role == ROLE.NORMAL && (
+            <Typography sx={styles} component={"div"}>
+              {` Online Agents `}
+              <span
+                style={{
+                  background: "green",
+                  height: "10px",
+                  width: "20px",
+                  borderRadius: "50px",
+                  color: "white",
+                }}
+              >
+                {
+                  onlineUsers.filter(
+                    (i: OnlineUser) =>
+                      i.userId != user?._id && i.role != "ADMIN"
+                  )?.length
+                }
+              </span>
+            </Typography>
+          )}
 
-          {userChats?.map((chat: any, index: number) => (
-            <div key={index} onClick={() => updateCurrentChat(chat)}>
-              <UserChat user={user} chat={chat} />
-            </div>
-          ))}
+          <CustomAccordion data={accordionData} />
 
           {/* {userChats && userChats?.data?.map((e: any) => <>chato</>)} */}
         </Grid2>
