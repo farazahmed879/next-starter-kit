@@ -68,7 +68,7 @@ const Chat = () => {
   };
 
   const accordionData = [
-    { id: "panel1", title: "Requests", data: <RequestCom /> },
+    { id: "panel1", title: `Requests (${requests?.length || 0})`, data: <RequestCom /> },
     { id: "users", title: "Users", data: <PotentialUsersCom /> },
     { id: "chats", title: "Chats", data: <UserChatsCom /> },
   ];
@@ -118,7 +118,7 @@ const Chat = () => {
           <ChatBox />
         </Grid2>
       </Grid2>
-    </>
+    </> 
   );
 };
 export default Chat;

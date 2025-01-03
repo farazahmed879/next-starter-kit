@@ -25,7 +25,7 @@ export default function CustomCompoentBox({
           <ListItem
             secondaryAction={
               <IconButton edge="end" aria-label="delete">
-                <SwipeRightIcon />
+                <SwipeRightIcon sx={{ color: "success.main" }} />
               </IconButton>
             }
             alignItems="flex-start"
