@@ -71,9 +71,36 @@ const Chat = () => {
   const accordionData = [
     {
       id: "panel1",
-      title: "Requests",
+      title: "",
       data: <RequestCom />,
-      extraProp: <div>{requests?.length}</div>,
+      extraProp: (
+        <div
+          style={{
+            display: "flex", 
+            alignItems: "center", 
+            gap: "8px", 
+          }}
+        >
+          <span style={{ fontSize: "16px" }}>Requests</span>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "#4caf50",
+              borderRadius: "100px",
+              color: "white",
+              fontWeight: "bold",
+              fontSize: "14px",
+              textAlign: "center",
+              width: "30px",
+              height: "25px",
+            }}
+          >
+            {requests?.length || 0}
+          </div>
+        </div>
+      ),
     },
     // { id: "users", title: "Users", data: <PotentialUsersCom /> },
     { id: "chats", title: "Chats", data: <UserChatsCom /> },
