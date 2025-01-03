@@ -2,14 +2,22 @@ import { ChatContext } from "@/context/ChatContext";
 import { convertDate, unreadNotification } from "@/helper/helper";
 import { useFetchLatestMessage } from "@/hooks/useFetchLastMessage";
 import { useFetchRecipientUser } from "@/hooks/useFetchRecipient";
-import { Avatar, Typography } from "@mui/material";
+import {
+  Avatar,
+  Typography,
+  ListItem,
+  ListItemText,
+  ListItemAvatar,
+  Divider,
+  IconButton,
+} from "@mui/material";
 import { useContext } from "react";
+import DeleteIcon from "@mui/icons-material/Delete";
+import SwipeRightIcon from "@mui/icons-material/SwipeRight";
 
 const UserChat = ({ user, chat }: any) => {
   const { receipientUser } = useFetchRecipientUser(chat, user);
-
   const { lastestMessage } = useFetchLatestMessage(chat);
-
   const { onlineUsers, notifications, markUserNotificationAsRead } =
     useContext(ChatContext);
 
@@ -33,57 +41,81 @@ const UserChat = ({ user, chat }: any) => {
 
   const trucateText = (text: string = "") => {
     if (text?.length > 20) return `${text?.substring(0, 20)}...`;
-
     return text;
   };
 
   return (
     <>
-      <div
-        style={{
-          display: "flex",
-          margin: 10,
-          justifyContent: "space-between",
-          cursor: "pointer",
-        }}
-        onClick={() => {
-          if (currentUserNotification?.length)
-            markUserNotificationAsRead(receipientUser, notifications);
-        }}
-      >
-        <div style={{ display: "flex", gap: 5 }}>
-          <Avatar alt="Remy Sharp" src="/file.svg" />
-          <div>
-            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              <div>{receipientUser?.name}</div>
-
-              <div style={isOnline ? styles : undefined}></div>
-            </div>
-
-            <div>{trucateText(lastestMessage?.text)}</div>
-          </div>
-        </div>
-        <div>
-          <div style={{ fontSize: "small" }}>
-            {convertDate(lastestMessage?.createdAt)}
-          </div>
-          <div
-            style={{
-              background: "red",
-              borderRadius: 50,
-              width: "25px",
-              display: "flex",
-              justifyContent: "center",
-              color: "white",
+      <ListItem
+        alignItems="flex-start"
+        secondaryAction={
+          <IconButton
+            edge="end"
+            aria-label="delete"
+            onClick={() => {
+              if (currentUserNotification?.length)
+                markUserNotificationAsRead(receipientUser, notifications);
             }}
           >
-            {currentUserNotification?.length
-              ? currentUserNotification?.length
-              : ""}
-          </div>
+            <SwipeRightIcon />
+          </IconButton>
+        }
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          margin: "10px 0",
+        }}
+      >
+        <ListItemAvatar>
+          <Avatar src="/file.svg" />
+        </ListItemAvatar>
+        <ListItemText
+          primary={
+            <Typography
+              variant="body1"
+              sx={{ display: "flex", alignItems: "center", gap: 1 }}
+            >
+              {receipientUser?.name}
+              <div style={isOnline ? styles : undefined}></div>
+            </Typography>
+          }
+          secondary={
+            <Typography
+              variant="body2"
+              color="text.primary"
+              sx={{ display: "flex", flexDirection: "column" }}
+            >
+              {trucateText(lastestMessage?.text)}
+              <Typography variant="caption" color="text.secondary">
+                {convertDate(lastestMessage?.createdAt)}
+              </Typography>
+            </Typography>
+          }
+        />
+      </ListItem>
+      <Divider />
+      {currentUserNotification?.length > 0 && (
+        <div
+          style={{
+            background: "red",
+            borderRadius: "50%",
+            width: "25px",
+            height: "25px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            color: "white",
+            position: "absolute",
+            top: "10px",
+            right: "10px",
+            fontSize: "small",
+          }}
+        >
+          {currentUserNotification?.length}
         </div>
-      </div>
+      )}
     </>
   );
 };
+
 export default UserChat;
