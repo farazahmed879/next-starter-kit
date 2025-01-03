@@ -69,11 +69,11 @@ const Chat = () => {
 
   const accordionData = [
     { id: "panel1", title: "Requests", data: <RequestCom /> },
-    { id: "users", title: "Users", data: <PotentialUsersCom /> },
+    // { id: "users", title: "Users", data: <PotentialUsersCom /> },
     { id: "chats", title: "Chats", data: <UserChatsCom /> },
   ];
 
-  console.log("accordionData", accordionData);
+  console.log("userChats", userChats);
 
   return (
     <>
