@@ -32,7 +32,7 @@ export const apiCall = async (
 
     const response = await axios.request(config);
 
-    return response;
+    return response?.data;
   } catch (error) {
     console.error("Error in API call", error);
   }

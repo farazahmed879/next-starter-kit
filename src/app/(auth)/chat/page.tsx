@@ -11,7 +11,8 @@ import { ROLE } from "@/helper/constant";
 import { OnlineUser, UserRequest } from "@/helper/interface";
 import CustomAccordion from "@/Components/CustomAccordion";
 import CustomCompoentBox from "@/Components/CustomCommentBox";
-import CustomChat from "@/Components/CustomChat";
+import CustomPotentialUsers from "@/Components/CustomPotentialUsers";
+import { red } from "@mui/material/colors";
 
 const styles = {
   padding: "10px",
@@ -30,6 +31,7 @@ const Chat = () => {
     messages,
     onlineUsers,
     requests,
+    acceptRequest,
   } = useContext(ChatContext);
 
   const { user } = useContext<any>(AuthContext);
@@ -39,47 +41,65 @@ const Chat = () => {
     const response = await apiCall(url, "post", { firstId, secondId });
     if (!response) return console.log("something went wrong");
 
-    let chats: any = [];
-    if (userChats && userChats.length) {
-      chats = [...userChats];
-    }
-    chats.push(response?.data);
-    setUserChats(chats);
+    setUserChats([...userChats, response]);
   };
 
   const RequestCom = () => {
-    return <CustomCompoentBox data={requests} />;
+    return (
+      <CustomCompoentBox
+        userChats={userChats}
+        data={requests}
+        handleAcceptRequest={(e: string) =>
+          acceptRequest("requests", { id: e, agentId: user?._id })
+        }
+      />
+    );
   };
 
   const UserChatsCom = () => {
-    // return <CustomCompoentBox data={userChats} />;
     return (
       <>
-        {userChats?.map((chat: any, index: number) => (
-          <div key={index} onClick={() => updateCurrentChat(chat)}>
-            <UserChat user={user} chat={chat} />
-          </div>
-        ))}
+        {userChats?.length ? (
+          userChats?.map((chat: any, index: number) => (
+            <div key={index} onClick={() => updateCurrentChat(chat)}>
+              <UserChat user={user} chat={chat} />
+            </div>
+          ))
+        ) : (
+          <>You have not started any chat yet</>
+        )}
       </>
     );
   };
 
-  const PotentialUsersCom = () => {
-    return <PotentialChats user={user} createChat={createChat} />;
-  };
+  // const PotentialUsersCom = () => {
+  //   return <PotentialChats user={user} createChat={createChat} />;
+  // };
 
   const accordionData = [
     {
-      id: "panel1",
+      id: "requests",
       title: "Requests",
       data: <RequestCom />,
-      extraProp: <div>{requests?.length}</div>,
+      extraProp: (
+        <div
+          style={{
+            background: "red",
+            width: "20px",
+            color: "white",
+            borderRadius: "5px",
+            textAlign: "center",
+          }}
+        >
+          {requests?.length}
+        </div>
+      ),
     },
     // { id: "users", title: "Users", data: <PotentialUsersCom /> },
     { id: "chats", title: "Chats", data: <UserChatsCom /> },
   ];
 
-  console.log("userChats", userChats);
+  // console.log("userChats", userChats);
 
   return (
     <>
@@ -99,7 +119,7 @@ const Chat = () => {
           <div>
             <>{isLoading ? "...loading chats" : ""}</>
             {user?.role == ROLE.NORMAL && (
-              <Typography sx={styles} component={"div"}>
+              <Typography sx={styles} component={"span"}>
                 {` Online Agents `}
                 <span
                   style={{
@@ -120,12 +140,16 @@ const Chat = () => {
               </Typography>
             )}
 
-            <CustomAccordion data={accordionData} />
+            <CustomAccordion
+              data={
+                user.role == ROLE.NORMAL
+                  ? accordionData.filter((i) => i.id != "requests")
+                  : accordionData
+              }
+            />
           </div>
 
-          <CustomChat user={user} createChat={createChat} />
-
-          {/* {userChats && userChats?.data?.map((e: any) => <>chato</>)} */}
+          <CustomPotentialUsers user={user} createChat={createChat} />
         </Grid2>
         <Grid2 size={8} sx={{ border: "solid #eedd82", borderRadius: 2 }}>
           <ChatBox />

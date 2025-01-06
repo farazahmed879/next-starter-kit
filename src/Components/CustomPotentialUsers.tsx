@@ -20,7 +20,7 @@ const styles: React.CSSProperties = {
   position: "absolute",
 };
 
-export default function CustomChat({
+export default function CustomPotentialUsers({
   user,
   createChat,
 }: {
@@ -95,9 +95,10 @@ export default function CustomChat({
           <Typography component={"span"} sx={{ margin: 10 }}>
             Potential Users
           </Typography>
-          {potentialChats &&
+          {potentialChats ?
             potentialChats.map((e: any, index: number) => (
               <MenuItem
+                key={index}
                 onClick={() => {
                   createChat(user?._id, e?._id);
                   handleClose();
@@ -112,7 +113,7 @@ export default function CustomChat({
                   }
                 ></span>
               </MenuItem>
-            ))}
+            )) : "Not found"}
         </div>
       </Menu>
     </div>

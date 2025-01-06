@@ -137,7 +137,7 @@ export default function Notification() {
                   gap: "4",
                 }}
               >
-                <Typography>Notifications</Typography>
+                <Typography component={"span"}>Notifications</Typography>
                 <Typography
                   sx={{ fontSize: "small" }}
                   component={"h6"}
@@ -165,7 +165,7 @@ export default function Notification() {
                   }
                 >
                   <Typography component={"span"}>{`${e.message}`}</Typography>
-                  <Typography component={"div"} sx={{ fontSize: "small" }}>
+                  <Typography component={"span"} sx={{ fontSize: "small" }}>
                     {convertDate(e.date)}
                   </Typography>
                 </Typography>

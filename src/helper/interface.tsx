@@ -79,6 +79,9 @@ export interface Chat {
   reatedAt: "";
   updatedAt: "";
   _id: "";
+  lastMessage: Message;
+  userDetail: User
+
 }
 
 export interface UseFetchRecipientUserReturn {

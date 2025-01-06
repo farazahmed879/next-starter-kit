@@ -6,29 +6,41 @@ import ListItemText from "@mui/material/ListItemText";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
-import { UserRequest } from "@/helper/interface";
-import CustomButton from "./CustomButton";
-import { IconButton, ListItemButton } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import SwipeRightIcon from "@mui/icons-material/SwipeRight";
-import SwipeLeftIcon from "@mui/icons-material/SwipeLeft";
+import { Chat, UserRequest } from "@/helper/interface";
+import { IconButton } from "@mui/material";
+import CustomIcon from "./CustomIcon";
 
 export default function CustomCompoentBox({
   data = [],
+  handleAcceptRequest,
+  userChats = [],
 }: {
   data: UserRequest[];
+  handleAcceptRequest: any;
+  userChats: any;
 }) {
-
-  
   return (
-    <List sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}>
+    <List sx={{ width: "100%", bgcolor: "background.paper" }}>
       {data.map((e: UserRequest, index: number) => (
-        <div key={index}>
+        <div key={index} style={{ width: "100%" }}>
           <ListItem
             secondaryAction={
-              <IconButton edge="end" aria-label="delete">
-                <SwipeRightIcon sx={{ color: "success.main" }} />
-              </IconButton>
+              userChats.some(
+                (i: Chat) => i?.userDetail?._id == e?.senderId?._id
+              ) ? (
+                <CustomIcon name="Block" />
+              ) : (
+                <IconButton
+                  edge="end"
+                  aria-label="delete"
+                  onClick={() => handleAcceptRequest(e?._id)}
+                >
+                  <CustomIcon
+                    name="SwipeRight"
+                    sx={{ color: "success.main" }}
+                  />
+                </IconButton>
+              )
             }
             alignItems="flex-start"
           >
@@ -36,7 +48,7 @@ export default function CustomCompoentBox({
               <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
             </ListItemAvatar>
             <ListItemText
-              primary={e?.senderId.name}
+              primary={e?.senderId?.name}
               secondary={
                 <React.Fragment>
                   <Typography
@@ -44,7 +56,7 @@ export default function CustomCompoentBox({
                     variant="body2"
                     sx={{ color: "text.primary" }}
                   >
-                    {e?.senderId.email}
+                    {e?.senderId?.email}
                   </Typography>
                   -- {e?.text}
                 </React.Fragment>

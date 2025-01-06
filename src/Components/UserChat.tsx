@@ -12,23 +12,21 @@ import {
   IconButton,
 } from "@mui/material";
 import { useContext } from "react";
-import DeleteIcon from "@mui/icons-material/Delete";
-import SwipeRightIcon from "@mui/icons-material/SwipeRight";
 
 const UserChat = ({ user, chat }: any) => {
-  const { receipientUser } = useFetchRecipientUser(chat, user);
-  const { lastestMessage } = useFetchLatestMessage(chat);
+
+
   const { onlineUsers, notifications, markUserNotificationAsRead } =
     useContext(ChatContext);
 
   const unreadNotifications = unreadNotification(notifications);
 
   const currentUserNotification = unreadNotifications.filter(
-    (i) => i?.senderId == receipientUser?._id
+    (i) => i?.senderId == chat?.userDetail?._id
   );
 
   const isOnline = onlineUsers.some(
-    (i: any) => i.userId == receipientUser?._id
+    (i: any) => i.userId == chat?.userDetail?._id
   );
 
   const styles: React.CSSProperties = {
@@ -48,18 +46,6 @@ const UserChat = ({ user, chat }: any) => {
     <>
       <ListItem
         alignItems="flex-start"
-        secondaryAction={
-          <IconButton
-            edge="end"
-            aria-label="delete"
-            onClick={() => {
-              if (currentUserNotification?.length)
-                markUserNotificationAsRead(receipientUser, notifications);
-            }}
-          >
-            <SwipeRightIcon />
-          </IconButton>
-        }
         sx={{
           display: "flex",
           justifyContent: "space-between",
@@ -72,22 +58,28 @@ const UserChat = ({ user, chat }: any) => {
         <ListItemText
           primary={
             <Typography
+              component={"span"}
               variant="body1"
               sx={{ display: "flex", alignItems: "center", gap: 1 }}
             >
-              {receipientUser?.name}
+              {chat?.userDetail?.name}
               <div style={isOnline ? styles : undefined}></div>
             </Typography>
           }
           secondary={
             <Typography
+              component={"span"}
               variant="body2"
               color="text.primary"
               sx={{ display: "flex", flexDirection: "column" }}
             >
-              {trucateText(lastestMessage?.text)}
-              <Typography variant="caption" color="text.secondary">
-                {convertDate(lastestMessage?.createdAt)}
+              {trucateText(chat?.lastMessage?.text)}
+              <Typography
+                component={"span"}
+                variant="caption"
+                color="text.secondary"
+              >
+                {convertDate(chat?.lastMessage?.createdAt)}
               </Typography>
             </Typography>
           }

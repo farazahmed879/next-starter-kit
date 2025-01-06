@@ -35,7 +35,7 @@ export const ChatContextProvider = ({ children, user }) => {
       const response = await apiCall(`chats/${user?._id}`, "get");
       setIsLoading(false);
       if (!response) return;
-      setUserChats(response?.data);
+      setUserChats(response);
       // getUsers(response?.data);
     }
   };
@@ -45,7 +45,7 @@ export const ChatContextProvider = ({ children, user }) => {
     const response = await apiCall(`messages/${currentChat?._id}`, "get");
     setIsMessageLoading(false);
     if (!response) return;
-    setMessages(response?.data);
+    setMessages(response);
     // getUsers(response?.data);
   };
 
@@ -67,9 +67,9 @@ export const ChatContextProvider = ({ children, user }) => {
       });
       if (!response) return console.log("Something went wrong");
 
-      if (response) setNewMessage(response.data);
+      if (response) setNewMessage(response);
 
-      setMessages((prev) => [...prev, response.data]);
+      setMessages((prev) => [...prev, response]);
       setTextMessage("");
     },
     []
@@ -128,9 +128,7 @@ export const ChatContextProvider = ({ children, user }) => {
       setIsLoading(false);
       if (!response) return;
 
-      setNotifications(response?.data);
-      //setUserChats(response?.data);
-      // getUsers(response?.data);
+      setNotifications(response);
     }
   };
 
@@ -145,10 +143,10 @@ export const ChatContextProvider = ({ children, user }) => {
     setIsLoading(false);
     if (!response) return;
     const existingChatMembers = userChats
-      ? userChats.flatMap((chat) => chat.members)
+      ? userChats.flatMap((chat) => chat?.members)
       : []; // Collecting all members of existing chats
 
-    const pChats = response.data.data.filter((u) => {
+    const pChats = response.data.filter((u) => {
       // Skip the current user
       if (user._id === u._id) return false;
 
@@ -157,7 +155,7 @@ export const ChatContextProvider = ({ children, user }) => {
     });
 
     setPotentialChats(pChats);
-    setAllUsers(response?.data?.data);
+    setAllUsers(response?.data);
   };
 
   const getRequests = async () => {
@@ -170,9 +168,10 @@ export const ChatContextProvider = ({ children, user }) => {
     });
     setIsLoading(false);
     if (!response) return;
-    console.log("getRequests", response);
-    setRequests(response?.data);
+    setRequests(response);
   };
+
+  console.log("requests", requests);
 
   const createOrMarkNotificationAsReadApi = async (
     url = "notifications",
@@ -181,20 +180,57 @@ export const ChatContextProvider = ({ children, user }) => {
     const response = await apiCall(url, "post", data, {
       Authorization: `Bearer ${session?.user?.token}`,
     });
-    console.log("response", response);
   };
 
   const createRequest = useCallback(
     async (url = "requests", data = {}, setChatInput) => {
-      const response = await apiCall(url, "post", data, {
-        Authorization: `Bearer ${session?.user?.token}`,
-      });
-      if (!response) return;
-      socket.emit("addNewRequest", response?.data);
-      SweetAlert("Success", "success", "Request Submited", undefined, "OK");
-      setChatInput("");
+      try {
+        const response = await apiCall(url, "post", data, {
+          Authorization: `Bearer ${session?.user?.token}`,
+        });
+
+        if (response?.success == false)
+          return SweetAlert(
+            "Warning",
+            "info",
+            response.message,
+            undefined,
+            "OK"
+          );
+
+        socket.emit("addNewRequest", { ...response, senderId: session?.user });
+        SweetAlert("Success", "success", "Request Submited", undefined, "OK");
+        setChatInput("");
+        const reqNotiData = {
+          senderId: user?._id,
+          isRead: false,
+          message: `${user?.name} requested for a chat`,
+        };
+
+        createOrMarkNotificationAsReadApi("notifications", reqNotiData);
+      } catch (error) {
+        console.log(error);
+      }
     }
   );
+  const acceptRequest = useCallback(async (url = "requests", data = {}) => {
+    try {
+      const response = await apiCall(url, "put", data, {
+        Authorization: `Bearer ${session?.user?.token}`,
+      });
+
+      if (response?.success == false)
+        return SweetAlert("Warning", "info", response.message, undefined, "OK");
+
+      const newRequests = requests.filter((i) => i._id != data?.id);
+      setRequests(newRequests);
+      console.log("accept chat", response);
+      setCurrentChat(response.chat);
+      setUserChats((prev) => [...prev, response.chat]);
+    } catch (error) {
+      console.log(error);
+    }
+  });
 
   const closeChat = () => {
     setCurrentChat(null);
@@ -244,8 +280,6 @@ export const ChatContextProvider = ({ children, user }) => {
     createOrMarkNotificationAsReadApi(url, data);
   }, [newMessage]);
 
-  //receive message and notifcations
-
   useEffect(() => {
     if (!socket) return;
     socket.on("getMessage", (res) => {
@@ -273,6 +307,7 @@ export const ChatContextProvider = ({ children, user }) => {
     });
 
     socket.on("getRequest", (res) => {
+      console.log("getRequest ai", res);
       setRequests((prev) => [...prev, res]);
     });
 
@@ -280,12 +315,16 @@ export const ChatContextProvider = ({ children, user }) => {
       socket.off("getMessage");
       socket.off("getNotification");
       socket.off("getOnlneUsers");
+      socket.off("getRequest");
     };
   }, [socket]);
 
   useEffect(() => {
     currentChatRef.current = currentChat; // update the ref whenever currentChat changes
   }, [currentChat]);
+
+  // console.log("currentChat", currentChat);
+  console.log("userChats", userChats);
 
   return (
     <ChatContext.Provider
@@ -308,6 +347,7 @@ export const ChatContextProvider = ({ children, user }) => {
         closeChat,
         createRequest,
         requests,
+        acceptRequest,
       }}
     >
       {children}

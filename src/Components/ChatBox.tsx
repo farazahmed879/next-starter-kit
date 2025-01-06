@@ -20,7 +20,7 @@ const ChatBox = () => {
     sendTextMessage,
     closeChat,
   } = useContext(ChatContext);
-  const { receipientUser } = useFetchRecipientUser(currentChat, user);
+  // const { receipientUser } = useFetchRecipientUser(currentChat, user);
 
   const [chatInput, setChatInput] = useState<string>("");
   const scroll = useRef<HTMLDivElement>(null);
@@ -33,7 +33,9 @@ const ChatBox = () => {
     scroll.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  if (!receipientUser || !currentChat)
+  console.log("currentChat ChatBox", currentChat);
+
+  if (!currentChat)
     return (
       <>
         <p style={{ textAlign: "center", width: "100%", marginTop: 10 }}>
@@ -66,8 +68,12 @@ const ChatBox = () => {
           justifyContent: "space-between",
         }}
       >
-        {receipientUser?.name}
-        <Typography component={"span"} onClick={() => closeChat()}>
+        {currentChat?.userDetail?.name}
+        <Typography
+          component={"span"}
+          onClick={() => closeChat()}
+          sx={{ cursor: "pointer" }}
+        >
           <CloseIcon />
         </Typography>
       </div>
