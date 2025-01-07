@@ -40,14 +40,12 @@ export default function Notification() {
     }
   );
 
-
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = (ev = "") => {
     setAnchorEl(null);
   };
-
 
   const CountSpan = ({ noti = [] }: any) => {
     return <span style={style}>{noti?.length}</span>;
@@ -159,6 +157,7 @@ export default function Notification() {
                   <Settings fontSize="small" />
                 </ListItemIcon>
                 <Typography
+                  sx={{ display: "flex", flexDirection: "column" }}
                   component={"span"}
                   onClick={() =>
                     markNotificationAsRead(e, userChats, user, notifications)

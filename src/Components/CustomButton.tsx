@@ -13,6 +13,7 @@ const CustomButton = ({
   widthProp = false,
   isLoadingButton = false,
   isLoading = false,
+  disabled = false,
 }: {
   handleClick?: MouseEventHandler<HTMLButtonElement> | undefined;
   buttonType?: any;
@@ -23,11 +24,13 @@ const CustomButton = ({
   widthProp?: boolean;
   isLoadingButton?: boolean;
   isLoading?: boolean;
+  disabled?: boolean;
 }) => {
   return (
     <>
       {isLoadingButton ? (
         <LoadingButton
+          disabled={disabled}
           loading={isLoading}
           loadingPosition="start"
           // startIcon={<SaveIcon />}
@@ -41,6 +44,7 @@ const CustomButton = ({
         </LoadingButton>
       ) : (
         <Button
+          disabled={disabled}
           type={buttonType}
           variant={variant}
           onClick={handleClick}

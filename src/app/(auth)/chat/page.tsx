@@ -61,7 +61,11 @@ const Chat = () => {
       <>
         {userChats?.length ? (
           userChats?.map((chat: any, index: number) => (
-            <div key={index} onClick={() => updateCurrentChat(chat)}>
+            <div
+              key={index}
+              onClick={() => updateCurrentChat(chat)}
+              style={{ cursor: "pointer" }}
+            >
               <UserChat user={user} chat={chat} />
             </div>
           ))
@@ -71,6 +75,8 @@ const Chat = () => {
       </>
     );
   };
+
+  // console.log("userChats", userChats);
 
   // const PotentialUsersCom = () => {
   //   return <PotentialChats user={user} createChat={createChat} />;
@@ -98,8 +104,6 @@ const Chat = () => {
     // { id: "users", title: "Users", data: <PotentialUsersCom /> },
     { id: "chats", title: "Chats", data: <UserChatsCom /> },
   ];
-
-  // console.log("userChats", userChats);
 
   return (
     <>

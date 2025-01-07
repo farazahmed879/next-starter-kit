@@ -14,8 +14,6 @@ import {
 import { useContext } from "react";
 
 const UserChat = ({ user, chat }: any) => {
-
-
   const { onlineUsers, notifications, markUserNotificationAsRead } =
     useContext(ChatContext);
 
@@ -28,6 +26,9 @@ const UserChat = ({ user, chat }: any) => {
   const isOnline = onlineUsers.some(
     (i: any) => i.userId == chat?.userDetail?._id
   );
+
+  // console.log("unreadNotifications", currentUserNotification);
+  // console.log("chat", chat);
 
   const styles: React.CSSProperties = {
     background: "skyblue",
@@ -45,6 +46,7 @@ const UserChat = ({ user, chat }: any) => {
   return (
     <>
       <ListItem
+        onClick={() => markUserNotificationAsRead(chat?.userDetail)}
         alignItems="flex-start"
         sx={{
           display: "flex",
@@ -81,31 +83,31 @@ const UserChat = ({ user, chat }: any) => {
               >
                 {convertDate(chat?.lastMessage?.createdAt)}
               </Typography>
+              {currentUserNotification?.length > 0 && (
+                <div
+                  style={{
+                    background: "red",
+                    borderRadius: "50%",
+                    width: "25px",
+                    height: "25px",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    color: "white",
+                    position: "absolute",
+                    top: "10px",
+                    right: "10px",
+                    fontSize: "small",
+                  }}
+                >
+                  {currentUserNotification?.length}
+                </div>
+              )}
             </Typography>
           }
         />
       </ListItem>
       <Divider />
-      {currentUserNotification?.length > 0 && (
-        <div
-          style={{
-            background: "red",
-            borderRadius: "50%",
-            width: "25px",
-            height: "25px",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            color: "white",
-            position: "absolute",
-            top: "10px",
-            right: "10px",
-            fontSize: "small",
-          }}
-        >
-          {currentUserNotification?.length}
-        </div>
-      )}
     </>
   );
 };

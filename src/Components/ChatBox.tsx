@@ -18,15 +18,18 @@ const ChatBox = () => {
     messages,
     isMessageLoading,
     sendTextMessage,
+    closeChatBox,
     closeChat,
   } = useContext(ChatContext);
+
+  const isOpen = currentChat?.data?.isOpen;
   // const { receipientUser } = useFetchRecipientUser(currentChat, user);
 
   const [chatInput, setChatInput] = useState<string>("");
   const scroll = useRef<HTMLDivElement>(null);
 
   const handleSendButton = () => {
-    sendTextMessage(chatInput, user?._id, currentChat?._id, setChatInput);
+    sendTextMessage(chatInput, user?._id, currentChat?.data?._id, setChatInput);
   };
 
   useEffect(() => {
@@ -71,7 +74,7 @@ const ChatBox = () => {
         {currentChat?.userDetail?.name}
         <Typography
           component={"span"}
-          onClick={() => closeChat()}
+          onClick={() => closeChatBox()}
           sx={{ cursor: "pointer" }}
         >
           <CloseIcon />
@@ -119,11 +122,24 @@ const ChatBox = () => {
             <div>Chat empty</div>
           )}
         </div>
-        <CustomEmojiInput
-          chatInput={chatInput}
-          setChatInput={setChatInput}
-          handleSendButton={handleSendButton}
-        />
+        <div>
+          <CustomEmojiInput
+            disabled={!isOpen}
+            chatInput={chatInput}
+            setChatInput={setChatInput}
+            handleSendButton={handleSendButton}
+          />
+          {isOpen && (
+            <button
+              style={{ width: "100%", cursor: "pointer" }}
+              onClick={() =>
+                closeChat("chats/close", { chatId: currentChat?.data?._id })
+              }
+            >
+              Close Chat
+            </button>
+          )}
+        </div>
       </div>
     </section>
   );

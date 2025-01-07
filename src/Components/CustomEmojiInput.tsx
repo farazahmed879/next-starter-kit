@@ -1,20 +1,36 @@
 import InputEmojiWithRef from "react-input-emoji";
 import CustomButton from "./CustomButton";
+import { useEffect, useRef } from "react";
 
 const CustomEmojiInput = ({
   chatInput,
   setChatInput,
   handleSendButton,
-  sendbuttonText = "Send"
+  sendbuttonText = "Send",
+  disabled = false,
 }: {
   chatInput: string;
   setChatInput: any;
   handleSendButton: any;
-  sendbuttonText?: string
+  sendbuttonText?: string;
+  disabled?: boolean;
 }) => {
+  const emojiInputRef = useRef<any>(null);
+
+  const disableInput = () => {
+    if (emojiInputRef.current) {
+      emojiInputRef.current.querySelector("input").disabled = true; // Disable input element directly
+    }
+  };
+
+  useEffect(() => {
+
+  },[]);
+
   return (
     <div style={{ display: "flex" }}>
       <InputEmojiWithRef
+        ref={emojiInputRef}
         placeholderColor="Enter Message here"
         value={chatInput}
         onChange={setChatInput}
@@ -26,6 +42,7 @@ const CustomEmojiInput = ({
       />
       <div style={{ margin: 10 }}>
         <CustomButton
+          disabled={disabled}
           text={sendbuttonText}
           handleClick={handleSendButton}
           size={"small"}
