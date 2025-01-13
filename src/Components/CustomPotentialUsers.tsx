@@ -10,6 +10,7 @@ import { User } from "@/helper/interface";
 import { ChatContext } from "@/context/ChatContext";
 import { Typography } from "@mui/material";
 import CustomIcon from "./CustomIcon";
+import { avatar } from "@/helper/constant";
 
 const styles: React.CSSProperties = {
   background: "skyblue",
@@ -95,25 +96,26 @@ export default function CustomPotentialUsers({
           <Typography component={"span"} sx={{ margin: 10 }}>
             Potential Users
           </Typography>
-          {potentialChats ?
-            potentialChats.map((e: any, index: number) => (
-              <MenuItem
-                key={index}
-                onClick={() => {
-                  createChat(user?._id, e?._id);
-                  handleClose();
-                }}
-              >
-                <Avatar /> {e?.name}{" "}
-                <span
-                  style={
-                    onlineUsers.some((i: any) => i.userId == e?._id)
-                      ? styles
-                      : undefined
-                  }
-                ></span>
-              </MenuItem>
-            )) : "Not found"}
+          {potentialChats
+            ? potentialChats.map((e: any, index: number) => (
+                <MenuItem
+                  key={index}
+                  onClick={() => {
+                    createChat(user?._id, e?._id);
+                    handleClose();
+                  }}
+                >
+                  <Avatar src={avatar} /> {e?.name}{" "}
+                  <span
+                    style={
+                      onlineUsers.some((i: any) => i.userId == e?._id)
+                        ? styles
+                        : undefined
+                    }
+                  ></span>
+                </MenuItem>
+              ))
+            : "Not found"}
         </div>
       </Menu>
     </div>

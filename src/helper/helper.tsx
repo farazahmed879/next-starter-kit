@@ -69,13 +69,17 @@ export const convertDate = (date: any) => {
 export const playNotificationSound = () => {
   const audio = new Audio("/long-pop.wav");
   audio.loop = false; // Set to loop the audio if required
-  audio.play();
+  audio.play().catch((error) => {
+    console.error("Error playing sound:", error);
+  });
 };
 
 export const playMsgSound = () => {
   const audio = new Audio("/pop.mp3");
   audio.loop = false; // Set to loop the audio if required
-  audio.play();
+  audio.play().catch((error) => {
+    console.error("Error playing sound:", error);
+  });
 };
 
 export const postMethod = async (url: string, body: any) => {

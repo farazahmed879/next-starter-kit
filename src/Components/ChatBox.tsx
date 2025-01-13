@@ -5,7 +5,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import InputEmoji from "react-input-emoji";
 import CustomButton from "./CustomButton";
 import { convertDate } from "@/helper/helper";
-import { Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { ROLE } from "@/helper/constant";
 import RequestChat from "./RequestChat";
@@ -36,8 +36,6 @@ const ChatBox = () => {
     scroll.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  console.log("currentChat ChatBox", currentChat);
-
   if (!currentChat)
     return (
       <>
@@ -59,7 +57,7 @@ const ChatBox = () => {
     );
 
   return (
-    <section>
+    <Box>
       <div
         style={{
           background: "gray",
@@ -123,25 +121,31 @@ const ChatBox = () => {
           )}
         </div>
         <div>
-          <CustomEmojiInput
-            disabled={!isOpen}
-            chatInput={chatInput}
-            setChatInput={setChatInput}
-            handleSendButton={handleSendButton}
-          />
-          {isOpen && (
-            <button
-              style={{ width: "100%", cursor: "pointer" }}
-              onClick={() =>
-                closeChat("chats/close", { chatId: currentChat?.data?._id })
-              }
-            >
-              Close Chat
-            </button>
+          {isOpen ? (
+            <Box>
+              <CustomEmojiInput
+                disabled={!isOpen}
+                chatInput={chatInput}
+                setChatInput={setChatInput}
+                handleSendButton={handleSendButton}
+              />
+              <button
+                style={{ width: "100%", cursor: "pointer" }}
+                onClick={() =>
+                  closeChat("chats/close", { chatId: currentChat?.data?._id })
+                }
+              >
+                Close Chat
+              </button>
+            </Box>
+          ) : (
+            <Box sx={{ display: "fex", justifyContent: "center" }}>
+              This chat has been closed
+            </Box>
           )}
         </div>
       </div>
-    </section>
+    </Box>
   );
 };
 export default ChatBox;

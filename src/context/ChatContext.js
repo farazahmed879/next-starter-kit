@@ -197,8 +197,14 @@ export const ChatContextProvider = ({ children, user }) => {
             "OK"
           );
 
-        socket.emit("addNewRequest", { ...response, senderId: session?.user });
-        SweetAlert("Success", "success", "Request Submited", undefined, "OK");
+        socket.emit("addNewRequest", { ...response, senderId: user });
+        SweetAlert(
+          "Success",
+          "success",
+          "Your request has been submitted, our representative will reposnd you shortly",
+          undefined,
+          "OK"
+        );
         setChatInput("");
         const reqNotiData = {
           senderId: user?._id,
@@ -225,11 +231,26 @@ export const ChatContextProvider = ({ children, user }) => {
       setRequests(newRequests);
       setCurrentChat(response.chat);
       setUserChats((prev) => [...prev, response.chat]);
+      const userChat = {
+        data: response?.chat?.data,
+        userDetail: user, // who accepts the request
+        senderId: data.senderId, //who are supposed to get notification
+      };
+      socket.emit("requestAccepted", userChat);
     } catch (error) {
       console.log(error);
     }
   });
 
+  const updateUserChat = (newChat, setter) => {
+    console.log("newChat", newChat);
+    console.log("userChats", userChats);
+    const updatedChats = userChats.map((e) =>
+      e.data._id === newChat._id ? { ...e, data: newChat } : e
+    );
+    setter(updatedChats);
+    setCurrentChat(null);
+  };
   const closeChat = useCallback(async (url = "chats", data = {}) => {
     try {
       const response = await apiCall(url, "put", data, {
@@ -239,7 +260,9 @@ export const ChatContextProvider = ({ children, user }) => {
       if (!response) return;
 
       SweetAlert("Success", "success", "Chat has been closed", undefined, "OK");
-      setCurrentChat(null);
+
+      updateUserChat(response, setUserChats);
+
       socket.emit("sendChatClosed", response);
     } catch (error) {
       console.log(error);
@@ -313,7 +336,6 @@ export const ChatContextProvider = ({ children, user }) => {
       const isChatOpen = currentChatRef.current?.data?.members.some(
         (id) => id == res.senderId
       );
-      debugger;
       if (isChatOpen) {
         setNotifications((prev) => [{ ...res, isRead: true }, ...prev]);
       } else {
@@ -332,8 +354,12 @@ export const ChatContextProvider = ({ children, user }) => {
     });
 
     socket.on("getChatClosed", (res) => {
-      const cc = userChats.find((i) => i.data._id == res._id);
-      cc.data = res
+      updateUserChat(res, setUserChats);
+    });
+
+    socket.on("getAcceptRequest", (res) => {
+      console.log("accpet request");
+      if (res?.userDetail?._id != user?._id) getUserChat();
     });
 
     return () => {
@@ -348,6 +374,8 @@ export const ChatContextProvider = ({ children, user }) => {
   useEffect(() => {
     currentChatRef.current = currentChat; // update the ref whenever currentChat changes
   }, [currentChat]);
+
+  console.log("userChats", userChats);
 
   return (
     <ChatContext.Provider

@@ -2,24 +2,16 @@
 import { ChatContext } from "@/context/ChatContext";
 import { AuthContext } from "@/context/AuthContext";
 import { useContext } from "react";
-import { Grid2, Typography } from "@mui/material";
+import { Box, Grid2 } from "@mui/material";
 import UserChat from "@/Components/UserChat";
-import PotentialChats from "@/Components/PotentialChats";
 import { apiCall } from "@/helper/helper";
 import ChatBox from "@/Components/ChatBox";
 import { ROLE } from "@/helper/constant";
-import { OnlineUser, UserRequest } from "@/helper/interface";
 import CustomAccordion from "@/Components/CustomAccordion";
 import CustomCompoentBox from "@/Components/CustomCommentBox";
 import CustomPotentialUsers from "@/Components/CustomPotentialUsers";
-import { red } from "@mui/material/colors";
-
-const styles = {
-  padding: "10px",
-  fontSize: "large",
-  color: "green",
-  fontFamily: "serif",
-};
+import OnlineAgentBar from "@/Components/OnlineAgentBar";
+import { User, UserRequest } from "@/helper/interface";
 
 const Chat = () => {
   const {
@@ -46,13 +38,23 @@ const Chat = () => {
 
   const RequestCom = () => {
     return (
-      <CustomCompoentBox
-        userChats={userChats}
-        data={requests}
-        handleAcceptRequest={(e: string) =>
-          acceptRequest("requests", { id: e, agentId: user?._id })
-        }
-      />
+      <>
+        {requests?.length ? (
+          <CustomCompoentBox
+            userChats={userChats}
+            data={requests}
+            handleAcceptRequest={(e: UserRequest) =>
+              acceptRequest("requests", {
+                id: e?._id,
+                agentId: user?._id,
+                senderId: e.senderId._id, //who generate the request
+              })
+            }
+          />
+        ) : (
+          <div>You don't have any requests yet</div>
+        )}
+      </>
     );
   };
 
@@ -76,12 +78,6 @@ const Chat = () => {
     );
   };
 
-  // console.log("userChats", userChats);
-
-  // const PotentialUsersCom = () => {
-  //   return <PotentialChats user={user} createChat={createChat} />;
-  // };
-
   const accordionData = [
     {
       id: "requests",
@@ -101,7 +97,6 @@ const Chat = () => {
         </div>
       ),
     },
-    // { id: "users", title: "Users", data: <PotentialUsersCom /> },
     { id: "chats", title: "Chats", data: <UserChatsCom /> },
   ];
 
@@ -120,28 +115,10 @@ const Chat = () => {
             justifyContent: "space-between",
           }}
         >
-          <div>
+          <Box>
             <>{isLoading ? "...loading chats" : ""}</>
             {user?.role == ROLE.NORMAL && (
-              <Typography sx={styles} component={"span"}>
-                {` Online Agents `}
-                <span
-                  style={{
-                    background: "green",
-                    height: "10px",
-                    width: "20px",
-                    borderRadius: "50px",
-                    color: "white",
-                  }}
-                >
-                  {
-                    onlineUsers.filter(
-                      (i: OnlineUser) =>
-                        i.userId != user?._id && i.role != "ADMIN"
-                    )?.length
-                  }
-                </span>
-              </Typography>
+              <OnlineAgentBar user={user} onlineUsers={onlineUsers} />
             )}
 
             <CustomAccordion
@@ -151,7 +128,7 @@ const Chat = () => {
                   : accordionData
               }
             />
-          </div>
+          </Box>
 
           <CustomPotentialUsers user={user} createChat={createChat} />
         </Grid2>

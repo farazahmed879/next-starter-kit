@@ -9,6 +9,7 @@ import Typography from "@mui/material/Typography";
 import { Chat, UserRequest } from "@/helper/interface";
 import { IconButton } from "@mui/material";
 import CustomIcon from "./CustomIcon";
+import { avatar } from "@/helper/constant";
 
 export default function CustomCompoentBox({
   data = [],
@@ -25,27 +26,18 @@ export default function CustomCompoentBox({
         <div key={index} style={{ width: "100%" }}>
           <ListItem
             secondaryAction={
-              userChats.some(
-                (i: Chat) => i?.userDetail?._id == e?.senderId?._id
-              ) ? (
-                <CustomIcon name="Block" />
-              ) : (
-                <IconButton
-                  edge="end"
-                  aria-label="delete"
-                  onClick={() => handleAcceptRequest(e?._id)}
-                >
-                  <CustomIcon
-                    name="SwipeRight"
-                    sx={{ color: "success.main" }}
-                  />
-                </IconButton>
-              )
+              <IconButton
+                edge="end"
+                aria-label="delete"
+                onClick={() => handleAcceptRequest(e)}
+              >
+                <CustomIcon name="SwipeRight" sx={{ color: "success.main" }} />
+              </IconButton>
             }
             alignItems="flex-start"
           >
             <ListItemAvatar>
-              <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+              <Avatar alt="Remy Sharp" src={avatar} />
             </ListItemAvatar>
             <ListItemText
               primary={e?.senderId?.name}

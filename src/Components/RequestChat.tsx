@@ -1,5 +1,5 @@
 "use client";
-import { Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { useContext, useState } from "react";
 import CustomEmojiInput from "./CustomEmojiInput";
 import { ChatContext } from "@/context/ChatContext";
@@ -19,7 +19,7 @@ const RequestChat = () => {
   };
 
   return (
-    <section>
+    <Box>
       <Typography component={"span"}>Request for a Chat</Typography>
       <CustomEmojiInput
         chatInput={chatInput}
@@ -27,7 +27,7 @@ const RequestChat = () => {
         handleSendButton={handleSendButton}
         sendbuttonText="Submit"
       />
-    </section>
+    </Box>
   );
 };
 export default RequestChat;

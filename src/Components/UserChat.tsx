@@ -1,4 +1,5 @@
 import { ChatContext } from "@/context/ChatContext";
+import { avatar } from "@/helper/constant";
 import { convertDate, unreadNotification } from "@/helper/helper";
 import { useFetchLatestMessage } from "@/hooks/useFetchLastMessage";
 import { useFetchRecipientUser } from "@/hooks/useFetchRecipient";
@@ -55,7 +56,7 @@ const UserChat = ({ user, chat }: any) => {
         }}
       >
         <ListItemAvatar>
-          <Avatar src="/file.svg" />
+          <Avatar src={avatar} />
         </ListItemAvatar>
         <ListItemText
           primary={
