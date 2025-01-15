@@ -1,15 +1,24 @@
+
+
+import { useContext, useEffect, useState, useRef } from "react";
 import { AuthContext } from "@/context/AuthContext";
 import { ChatContext } from "@/context/ChatContext";
-import { useFetchRecipientUser } from "@/hooks/useFetchRecipient";
-import { useContext, useEffect, useRef, useState } from "react";
-import InputEmoji from "react-input-emoji";
-import CustomButton from "./CustomButton";
-import { convertDate } from "@/helper/helper";
 import { Box, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { ROLE } from "@/helper/constant";
 import RequestChat from "./RequestChat";
+import { convertDate } from "@/helper/helper";
 import CustomEmojiInput from "./CustomEmojiInput";
+import io from "socket.io-client"; 
+
+
+interface Message {
+  senderId: string;
+  chatId: string;
+  text: string;
+  createdAt: string;
+ 
+}
 
 const ChatBox = () => {
   const { user } = useContext<any>(AuthContext);
@@ -20,16 +29,36 @@ const ChatBox = () => {
     sendTextMessage,
     closeChatBox,
     closeChat,
+    setMessages,
   } = useContext(ChatContext);
-
-  const isOpen = currentChat?.data?.isOpen;
-  // const { receipientUser } = useFetchRecipientUser(currentChat, user);
 
   const [chatInput, setChatInput] = useState<string>("");
   const scroll = useRef<HTMLDivElement>(null);
+  const socket = useRef<any>(null);
+
+  useEffect(() => {
+    socket.current = io("http://localhost:4000");
+
+    // Listen for incoming messages
+    socket.current.on("getMessage", (message: Message) => {
+      console.log("Received message:", message); // Log the message
+      if (currentChat?.data?._id === message.chatId) {
+        setMessages((prevMessages: Message[]) => [...prevMessages, message]);
+      }
+    });
+
+    return () => {
+      socket.current.disconnect();
+    };
+  }, [currentChat?.data?._id, setMessages]);
 
   const handleSendButton = () => {
     sendTextMessage(chatInput, user?._id, currentChat?.data?._id, setChatInput);
+    socket.current.emit("sendMessage", {
+      chatId: currentChat?.data?._id,
+      senderId: user?._id,
+      text: chatInput,
+    });
   };
 
   useEffect(() => {
@@ -38,23 +67,13 @@ const ChatBox = () => {
 
   if (!currentChat)
     return (
-      <>
-        <p style={{ textAlign: "center", width: "100%", marginTop: 10 }}>
-          {user.role == ROLE.NORMAL ? (
-            <RequestChat />
-          ) : (
-            " No Conversation Selected yet..."
-          )}
-        </p>
-      </>
+      <p style={{ textAlign: "center", width: "100%", marginTop: 10 }}>
+        {user.role == ROLE.NORMAL ? <RequestChat /> : "No Conversation Selected yet..."}
+      </p>
     );
 
   if (isMessageLoading)
-    return (
-      <>
-        <p style={{ textAlign: "center", width: "100%" }}>Loading chat...</p>
-      </>
-    );
+    return <p style={{ textAlign: "center", width: "100%" }}>Loading chat...</p>;
 
   return (
     <Box>
@@ -89,7 +108,7 @@ const ChatBox = () => {
       >
         <div style={{ overflowY: "scroll" }}>
           {messages?.length ? (
-            messages.map((msg: any, index: number) => (
+            messages.map((msg: Message, index: number) => (
               <div
                 key={index}
                 style={{
@@ -109,9 +128,7 @@ const ChatBox = () => {
                 >
                   <div>
                     <div>{msg?.text}</div>
-                    <div style={{ fontSize: "small" }}>
-                      {convertDate(msg?.createdAt)}
-                    </div>
+                    <div style={{ fontSize: "small" }}>{convertDate(msg?.createdAt)}</div>
                   </div>
                 </div>
               </div>
@@ -121,10 +138,10 @@ const ChatBox = () => {
           )}
         </div>
         <div>
-          {isOpen ? (
+          {currentChat?.data?.isOpen ? (
             <Box>
               <CustomEmojiInput
-                disabled={!isOpen}
+                disabled={!currentChat?.data?.isOpen}
                 chatInput={chatInput}
                 setChatInput={setChatInput}
                 handleSendButton={handleSendButton}
@@ -139,7 +156,7 @@ const ChatBox = () => {
               </button>
             </Box>
           ) : (
-            <Box sx={{ display: "fex", justifyContent: "center" }}>
+            <Box sx={{ display: "flex", justifyContent: "center" }}>
               This chat has been closed
             </Box>
           )}

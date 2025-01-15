@@ -326,6 +326,8 @@ export const ChatContextProvider = ({ children, user }) => {
   useEffect(() => {
     if (!socket) return;
     socket.on("getMessage", (res) => {
+      console.log("Messge is being received on Client", res)
+
       if (currentChatRef.current?.data?._id !== res.chatId) return;
 
       setMessages((prev) => [...prev, res]);
