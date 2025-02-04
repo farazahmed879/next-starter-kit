@@ -13,9 +13,9 @@ import {
 // Define types for the context value
 
 // Create the context with the type
-export const AuthContext = createContext<AuthContextType | undefined | DecodedToken>(
-  undefined
-);
+export const AuthContext = createContext<
+  AuthContextType | undefined | DecodedToken
+>(undefined);
 
 export const AuthConextProvider: React.FC<AuthContextProviderProps> = ({
   children,
@@ -33,6 +33,7 @@ export const AuthConextProvider: React.FC<AuthContextProviderProps> = ({
 
   let user: DecodedToken | null = null;
   if (session) {
+    console.log("session", session);
     user = jwtDecode<DecodedToken>(session?.user.token); // Type the decoded token
   }
 

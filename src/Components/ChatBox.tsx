@@ -1,5 +1,3 @@
-
-
 import { useContext, useEffect, useState, useRef } from "react";
 import { AuthContext } from "@/context/AuthContext";
 import { ChatContext } from "@/context/ChatContext";
@@ -9,15 +7,13 @@ import { ROLE } from "@/helper/constant";
 import RequestChat from "./RequestChat";
 import { convertDate } from "@/helper/helper";
 import CustomEmojiInput from "./CustomEmojiInput";
-import io from "socket.io-client"; 
-
+import io from "socket.io-client";
 
 interface Message {
   senderId: string;
   chatId: string;
   text: string;
   createdAt: string;
- 
 }
 
 const ChatBox = () => {
@@ -36,29 +32,29 @@ const ChatBox = () => {
   const scroll = useRef<HTMLDivElement>(null);
   const socket = useRef<any>(null);
 
-  useEffect(() => {
-    socket.current = io("http://localhost:4000");
+  // useEffect(() => {
+  //   socket.current = io("http://localhost:4000");
 
-    // Listen for incoming messages
-    socket.current.on("getMessage", (message: Message) => {
-      console.log("Received message:", message); // Log the message
-      if (currentChat?.data?._id === message.chatId) {
-        setMessages((prevMessages: Message[]) => [...prevMessages, message]);
-      }
-    });
+  //   // Listen for incoming messages
+  //   socket.current.on("getMessage", (message: Message) => {
+  //     console.log("Received message:", message); // Log the message
+  //     if (currentChat?.data?._id === message.chatId) {
+  //       setMessages((prevMessages: Message[]) => [...prevMessages, message]);
+  //     }
+  //   });
 
-    return () => {
-      socket.current.disconnect();
-    };
-  }, [currentChat?.data?._id, setMessages]);
+  //   return () => {
+  //     socket.current.disconnect();
+  //   };
+  // }, [currentChat?.data?._id, setMessages]);
 
   const handleSendButton = () => {
     sendTextMessage(chatInput, user?._id, currentChat?.data?._id, setChatInput);
-    socket.current.emit("sendMessage", {
-      chatId: currentChat?.data?._id,
-      senderId: user?._id,
-      text: chatInput,
-    });
+    // socket.current.emit("sendMessage", {
+    //   chatId: currentChat?.data?._id,
+    //   senderId: user?._id,
+    //   text: chatInput,
+    // });
   };
 
   useEffect(() => {
@@ -68,12 +64,18 @@ const ChatBox = () => {
   if (!currentChat)
     return (
       <p style={{ textAlign: "center", width: "100%", marginTop: 10 }}>
-        {user.role == ROLE.NORMAL ? <RequestChat /> : "No Conversation Selected yet..."}
+        {user.role == ROLE.NORMAL ? (
+          <RequestChat />
+        ) : (
+          "No Conversation Selected yet..."
+        )}
       </p>
     );
 
   if (isMessageLoading)
-    return <p style={{ textAlign: "center", width: "100%" }}>Loading chat...</p>;
+    return (
+      <p style={{ textAlign: "center", width: "100%" }}>Loading chat...</p>
+    );
 
   return (
     <Box>
@@ -128,7 +130,9 @@ const ChatBox = () => {
                 >
                   <div>
                     <div>{msg?.text}</div>
-                    <div style={{ fontSize: "small" }}>{convertDate(msg?.createdAt)}</div>
+                    <div style={{ fontSize: "small" }}>
+                      {convertDate(msg?.createdAt)}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -149,7 +153,10 @@ const ChatBox = () => {
               <button
                 style={{ width: "100%", cursor: "pointer" }}
                 onClick={() =>
-                  closeChat("chats/close", { chatId: currentChat?.data?._id })
+                  closeChat("chats/close", {
+                    chatId: currentChat?.data?._id,
+                    recipientId: currentChat?.userDetail?._id,
+                  })
                 }
               >
                 Close Chat

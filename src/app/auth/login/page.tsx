@@ -17,6 +17,7 @@ import CustomInput from "@/Components/CustomInput";
 import Grid from "@mui/material/Grid2";
 import AppTheme from "@/app/shared-theme/AppTheme";
 import ColorModeSelect from "@/app/shared-theme/ColorModeSelect";
+import { red } from "@mui/material/colors";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
@@ -85,16 +86,19 @@ export default function SignIn({}: {}) {
   } = useForm<Inputs>({ defaultValues });
 
   const onSubmit: SubmitHandler<Inputs> = async (form: any) => {
+    setErrorMessage("");
     setIsloading(true);
     const res = await signIn("credentials", {
       redirect: false,
       username: form.email,
       password: form.password,
     });
+
     setIsloading(false);
     if (res?.error) {
       setErrorMessage("Invalid Username or Password");
     } else {
+      setErrorMessage("");
       router.push("/dashboard");
     }
   };
@@ -162,6 +166,17 @@ export default function SignIn({}: {}) {
                     widthProp={true}
                   ></CustomButton>
                 </Grid>
+                {!!errorMessage && (
+                  <div
+                    style={{
+                      color: "red",
+                      textAlign: "center",
+                      fontSize: "small",
+                    }}
+                  >
+                    {errorMessage}
+                  </div>
+                )}
               </Grid>
             </Box>
           </form>
@@ -177,7 +192,10 @@ export default function SignIn({}: {}) {
               Sign in with Google
             </Button> */}
 
-            <Typography component={'span'} sx={{ textAlign: "center", cursor: "pointer" }}>
+            <Typography
+              component={"span"}
+              sx={{ textAlign: "center", cursor: "pointer" }}
+            >
               Don&apos;t have an account?{" "}
               <Link
                 onClick={() => router.push("/auth/register")}

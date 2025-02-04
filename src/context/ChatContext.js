@@ -111,13 +111,22 @@ export const ChatContextProvider = ({ children, user }) => {
     }
   );
   const markUserNotificationAsRead = useCallback(async (chatUser) => {
+    console.log("caht....", chatUser);
     let mNotifcations = [];
     notifications.forEach((e) => {
-      if (e?.senderId == chatUser?._id) e.isRead = true;
+      if (
+        e?.senderId == chatUser?.userDetail?._id &&
+        e?.chatId == chatUser?.data?._id
+      )
+        e.isRead = true;
       mNotifcations.push(e);
     });
     const url = "notifications/markReadByUserId";
-    const data = { userId: user?._id, senderId: chatUser?._id };
+    const data = {
+      userId: user?._id,
+      senderId: chatUser?.userDetail?._id,
+      chatId: chatUser?.data?._id,
+    };
     createOrMarkNotificationAsReadApi(url, data);
     setNotifications(mNotifcations);
   });
@@ -143,8 +152,8 @@ export const ChatContextProvider = ({ children, user }) => {
     });
     setIsLoading(false);
     if (!response) return;
-    const existingChatMembers = userChats
-      ? userChats.flatMap((chat) => chat?.members)
+    const existingChatMembers = markUserNotificationAsRead
+      ? userChats?.flatMap((chat) => chat?.members)
       : []; // Collecting all members of existing chats
 
     const pChats = response.data.filter((u) => {
@@ -152,7 +161,7 @@ export const ChatContextProvider = ({ children, user }) => {
       if (user._id === u._id) return false;
 
       // Check if the user has already been in a chat
-      return !existingChatMembers.includes(u._id); // Exclude users who are in existing chats
+      return !existingChatMembers?.includes(u._id); // Exclude users who are in existing chats
     });
 
     setPotentialChats(pChats);
@@ -176,6 +185,7 @@ export const ChatContextProvider = ({ children, user }) => {
     url = "notifications",
     data = {}
   ) => {
+    console.log("data", data);
     const response = await apiCall(url, "post", data, {
       Authorization: `Bearer ${session?.user?.token}`,
     });
@@ -243,9 +253,9 @@ export const ChatContextProvider = ({ children, user }) => {
   });
 
   const updateUserChat = (newChat, setter) => {
-    console.log("newChat", newChat);
-    console.log("userChats", userChats);
-    const updatedChats = userChats.map((e) =>
+    // console.log("newChat", newChat);
+    // console.log("userChats", userChats);
+    const updatedChats = userChats?.map((e) =>
       e.data._id === newChat._id ? { ...e, data: newChat } : e
     );
     setter(updatedChats);
@@ -253,6 +263,7 @@ export const ChatContextProvider = ({ children, user }) => {
   };
   const closeChat = useCallback(async (url = "chats", data = {}) => {
     try {
+      console.log("data closeChat", data);
       const response = await apiCall(url, "put", data, {
         Authorization: `Bearer ${session?.user?.token}`,
       });
@@ -263,7 +274,7 @@ export const ChatContextProvider = ({ children, user }) => {
 
       updateUserChat(response, setUserChats);
 
-      socket.emit("sendChatClosed", response);
+      socket.emit("sendChatClosed", {...response , recipientId: data.recipientId});
     } catch (error) {
       console.log(error);
     }
@@ -307,17 +318,21 @@ export const ChatContextProvider = ({ children, user }) => {
       (id) => id !== user?._id
     );
 
+    console.log("sendMessage", newMessage);
+
     socket.emit("sendMessage", {
       ...newMessage,
       senderName: user?.email,
       receipientId,
     });
+
     const url = "notifications";
     const data = {
       senderId: user?._id,
       userId: receipientId,
       isRead: false,
       message: `${user?.email} sent you a message`,
+      chatId: newMessage?.chatId,
     };
 
     createOrMarkNotificationAsReadApi(url, data);
@@ -326,8 +341,8 @@ export const ChatContextProvider = ({ children, user }) => {
   useEffect(() => {
     if (!socket) return;
     socket.on("getMessage", (res) => {
-      console.log("Messge is being received on Client", res)
-
+      if (res.senderId == user?._id) return;
+      console.log("Messge is being received on Client", res);
       if (currentChatRef.current?.data?._id !== res.chatId) return;
 
       setMessages((prev) => [...prev, res]);
@@ -356,11 +371,12 @@ export const ChatContextProvider = ({ children, user }) => {
     });
 
     socket.on("getChatClosed", (res) => {
+      console.log("getChatClosed", res);
       updateUserChat(res, setUserChats);
     });
 
     socket.on("getAcceptRequest", (res) => {
-      console.log("accpet request");
+      console.log("accpeted request");
       if (res?.userDetail?._id != user?._id) getUserChat();
     });
 
@@ -377,7 +393,7 @@ export const ChatContextProvider = ({ children, user }) => {
     currentChatRef.current = currentChat; // update the ref whenever currentChat changes
   }, [currentChat]);
 
-  console.log("userChats", userChats);
+  // console.log("userChats", userChats);
 
   return (
     <ChatContext.Provider

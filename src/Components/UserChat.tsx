@@ -14,11 +14,13 @@ import {
 } from "@mui/material";
 import { useContext } from "react";
 
-const UserChat = ({ user, chat }: any) => {
+const UserChat = ({ chat }: any) => {
+
   const { onlineUsers, notifications, markUserNotificationAsRead } =
     useContext(ChatContext);
 
   const unreadNotifications = unreadNotification(notifications);
+
 
   const currentUserNotification = unreadNotifications.filter(
     (i) => i?.senderId == chat?.userDetail?._id
@@ -47,7 +49,7 @@ const UserChat = ({ user, chat }: any) => {
   return (
     <>
       <ListItem
-        onClick={() => markUserNotificationAsRead(chat?.userDetail)}
+        onClick={() => markUserNotificationAsRead(chat)}
         alignItems="flex-start"
         sx={{
           display: "flex",
@@ -65,7 +67,8 @@ const UserChat = ({ user, chat }: any) => {
               variant="body1"
               sx={{ display: "flex", alignItems: "center", gap: 1 }}
             >
-              {chat?.userDetail?.name}
+              {chat?.userDetail?.name}-{" "}
+              <span>{!chat.data.isOpen && "closed"}</span>
               <div style={isOnline ? styles : undefined}></div>
             </Typography>
           }
@@ -84,7 +87,7 @@ const UserChat = ({ user, chat }: any) => {
               >
                 {convertDate(chat?.lastMessage?.createdAt)}
               </Typography>
-              {currentUserNotification?.length > 0 && (
+              {currentUserNotification?.length > 0 && chat?.data?.isOpen && (
                 <div
                   style={{
                     background: "red",

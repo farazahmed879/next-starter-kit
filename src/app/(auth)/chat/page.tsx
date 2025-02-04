@@ -68,7 +68,7 @@ const Chat = () => {
               onClick={() => updateCurrentChat(chat)}
               style={{ cursor: "pointer" }}
             >
-              <UserChat user={user} chat={chat} />
+              <UserChat chat={chat} />
             </div>
           ))
         ) : (

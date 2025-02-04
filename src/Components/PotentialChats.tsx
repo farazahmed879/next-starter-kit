@@ -28,7 +28,7 @@ const PotentialChats = ({ user, createChat }: any) => {
         potentialChats.map((e: any, index: number) => (
           <Typography
             className="text-wrap"
-            component={"div"}
+            component={"span"}
             key={index}
             onClick={() => createChat(user?._id, e?._id)}
             style={{

@@ -18,7 +18,7 @@ export const options: NextAuthOptions = {
         },
       },
       async authorize(credentials) {
-        console.log("credentials", credentials);
+        // console.log("credentials", credentials);
         //where I will get the user data from either database or from somewhere else
 
         //https://next-auth.js.org/configuration/providers/credentials use this link to check it
@@ -40,8 +40,8 @@ export const options: NextAuthOptions = {
           });
 
           if (!response.ok) {
-            console.error("Failed to authneticate user:", response.statusText);
-            return null;
+            // console.error("Failed to authneticate user:", response.statusText);
+            return null
           }
 
           const data = await response.json();

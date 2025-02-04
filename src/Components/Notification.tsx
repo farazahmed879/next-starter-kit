@@ -16,7 +16,7 @@ import { Notifications, User } from "@/helper/interface";
 import { AuthContext } from "@/context/AuthContext";
 
 export default function Notification() {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [anchorEl, setAnchorEl] = useState<any>(null);
   const open = Boolean(anchorEl);
 
   const {

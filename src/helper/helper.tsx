@@ -5,6 +5,8 @@ import { useSession } from "next-auth/react";
 import { jwtDecode } from "jwt-decode";
 import { Notifications } from "./interface";
 import moment from "moment";
+import { signOut } from "next-auth/react";
+
 // const { data: session, status: sessionStatus } = useSession();
 
 export const baseUrl = "http://localhost:8080/";
@@ -33,8 +35,13 @@ export const apiCall = async (
     const response = await axios.request(config);
 
     return response?.data;
-  } catch (error) {
-    console.error("Error in API call", error);
+  } catch (error: any) {
+    if (error.code == "ERR_BAD_RESPONSE")
+      await signOut({
+        redirect: true, // Optionally redirect the user after signing out
+        callbackUrl: "/", // Redirect URL after logout (default is home page)
+      });
+    console.log("Error in API call", error);
   }
 };
 

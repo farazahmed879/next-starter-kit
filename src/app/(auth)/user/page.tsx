@@ -240,7 +240,6 @@ const Project: React.FC = () => {
   ];
 
   const handleDelete = async (rowData: any) => {
-    console.log(rowData._id);
 
     const result = await SweetAlert(
       "Are you sure?",
@@ -268,7 +267,6 @@ const Project: React.FC = () => {
   };
 
   const handleEdit = (rowData: any) => {
-    console.log(rowData._id);
   };
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>
