@@ -60,7 +60,7 @@ const Chat = () => {
 
   const UserChatsCom = () => {
     return (
-      <>
+      <div style={{ overflowY: "scroll", minHeight: "80vh" }}>
         {userChats?.length ? (
           userChats?.map((chat: any, index: number) => (
             <div
@@ -74,7 +74,7 @@ const Chat = () => {
         ) : (
           <>You have not started any chat yet</>
         )}
-      </>
+      </div>
     );
   };
 
@@ -130,7 +130,9 @@ const Chat = () => {
             />
           </Box>
 
-          <CustomPotentialUsers user={user} createChat={createChat} />
+          {user.role != ROLE.NORMAL && (
+            <CustomPotentialUsers user={user} createChat={createChat} />
+          )}
         </Grid2>
         <Grid2 size={8} sx={{ border: "solid #eedd82", borderRadius: 2 }}>
           <ChatBox />

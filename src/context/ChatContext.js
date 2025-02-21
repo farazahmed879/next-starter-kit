@@ -246,7 +246,7 @@ export const ChatContextProvider = ({ children, user }) => {
         userDetail: user, // who accepts the request
         senderId: data.senderId, //who are supposed to get notification
       };
-      socket.emit("requestAccepted", userChat);
+      socket.emit("requestAccepted", { ...userChat, requestId: data?.id });
     } catch (error) {
       console.log(error);
     }
@@ -274,7 +274,10 @@ export const ChatContextProvider = ({ children, user }) => {
 
       updateUserChat(response, setUserChats);
 
-      socket.emit("sendChatClosed", {...response , recipientId: data.recipientId});
+      socket.emit("sendChatClosed", {
+        ...response,
+        recipientId: data.recipientId,
+      });
     } catch (error) {
       console.log(error);
     }
@@ -376,8 +379,13 @@ export const ChatContextProvider = ({ children, user }) => {
     });
 
     socket.on("getAcceptRequest", (res) => {
-      console.log("accpeted request");
-      if (res?.userDetail?._id != user?._id) getUserChat();
+      console.log("accpeted request", res);
+      if (res?.userDetail?._id != user?._id) {
+        getUserChat();
+        if (res?.senderId != user?._id) {
+          setRequests(requests.filter((i) => i._id != res?.requestId));
+        }
+      }
     });
 
     return () => {
