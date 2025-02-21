@@ -25,6 +25,8 @@ interface InputFieldProps {
   type?: string;
   title?: any;
   multiline?: boolean;
+  handleChange?: any
+  value?: string
   options?: { label: string; value: string | number }[]; // Added options for dropdown
 }
 
@@ -74,6 +76,8 @@ const CustomInput = ({
   multiline,
   type,
   options = [], // Accept options for dropdown
+  handleChange,
+  value = "",
 }: InputFieldProps) => {
   const theme = useTheme(); // Access the current theme
 
@@ -146,7 +150,36 @@ const CustomInput = ({
           )}
         </FormControl>
       ) : (
-        <></>
+        <>
+          {" "}
+          <TextField
+            autoComplete="off"
+            size="small"
+            sx={() => textFieldDesign(theme)} // Pass the theme to style the TextField component
+            disabled={disabled}
+            label={label || title}
+            multiline={multiline}
+            onChange={handleChange}
+            type={type}
+            placeholder={placeholder}
+            value={value}
+            InputProps={{
+              readOnly: disabled ? disabled : false,
+              endAdornment: showAdornment ? (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="click end adornment button"
+                    onClick={onEndAdornmentClick}
+                    sx={{ color: "#4e4e54" }}
+                    edge="end"
+                  >
+                    <SearchIcon />
+                  </IconButton>
+                </InputAdornment>
+              ) : null,
+            }}
+          />
+        </>
       )}
     </>
   );

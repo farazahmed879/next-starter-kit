@@ -19,7 +19,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   selectedImages,
   handleFileChange,
 }) => {
-  console.log(selectedImages);
 
   const stylesA = {
     display: "inline-block",

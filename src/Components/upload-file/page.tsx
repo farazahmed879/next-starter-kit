@@ -20,7 +20,6 @@ const UploadFile = () => {
     setSelectedImage(event.target.files[0]);
   };
 
-  //   console.log(selectedImage)
 
   const onSubmit = async (data: any) => {
     const req = {

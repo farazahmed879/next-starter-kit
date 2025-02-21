@@ -18,6 +18,8 @@ import CustomButton from "@/Components/CustomButton";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { apiCall, SweetAlert } from "@/helper/helper";
+import { useContext } from "react";
+import { AuthContext } from "@/context/AuthContext";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
@@ -61,16 +63,11 @@ const SignUpContainer = styled(Stack)(({ theme }) => ({
   },
 }));
 
-export default function SignUp({}: {}) {
-  // const [emailError, setEmailError] = React.useState(false);
-  // const [emailErrorMessage, setEmailErrorMessage] = React.useState("");
-  // const [passwordError, setPasswordError] = React.useState(false);
-  // const [passwordErrorMessage, setPasswordErrorMessage] = React.useState("");
-  // const [nameError, setNameError] = React.useState(false);
-  // const [nameErrorMessage, setNameErrorMessage] = React.useState("");
+export default function SignUp() {
   const { data: session, status: sessionStatus } = useSession();
-  const [isLoading, setIsloading] = React.useState<boolean>();
   const router = useRouter();
+  const { registerInfo, updateregisterInfo, isLoading } =
+    useContext<any>(AuthContext);
 
   type Inputs = {
     name: string;
@@ -103,47 +100,16 @@ export default function SignUp({}: {}) {
   } = useForm<Inputs>({ defaultValues });
 
   const onSubmit: SubmitHandler<Inputs> = async (data: any) => {
-    console.log("onSubmit", data);
     if (data.password != data.confirmPassword) return;
-
-    try {
-      const reqData = {
-        name: data.name,
-        email: data.email,
-        password: data.password,
-        file: "",
-      };
-
-      setIsloading(true);
-      const response = await apiCall(
-        "http://localhost:8080/users",
-        "post",
-        reqData
-      );
-
-      setIsloading(false);
-      console.log("response", response);
-      if (response.data.message == "User  Created Successfully") {
-        // alert("User added successfully!");
-        const res = await SweetAlert(
-          "Success",
-          "success",
-          "User added successfully!",
-          false,
-          "OK"
-        );
-
-        if (res.isDenied) return;
-        router.replace("/auth/login");
-      } else {
-        const errorData = await response.json();
-        console.log("Error:", errorData);
-      }
-    } catch (error) {
-      console.error("Network error", error);
-      alert("Failed to submit form, please try again");
-    }
+    const reqData = {
+      name: data.name,
+      email: data.email,
+      password: data.password,
+      file: "",
+    };
+    updateregisterInfo(reqData);
   };
+
 
   return (
     <AppTheme>
@@ -203,7 +169,7 @@ export default function SignUp({}: {}) {
               </Grid>
               <CustomButton
                 variant="contained"
-                text="Sign Up"
+                text={isLoading ? "...Loading" : "Sign Up"}
                 color="secondary"
                 widthProp={true}
                 buttonType={"submit"}
@@ -211,10 +177,10 @@ export default function SignUp({}: {}) {
             </Box>
           </form>
           <Divider>
-            <Typography sx={{ color: "text.secondary" }}>or</Typography>
+            <Typography component={'span'} sx={{ color: "text.secondary" }}>or</Typography>
           </Divider>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            <Typography sx={{ textAlign: "center", cursor: "pointer" }}>
+            <Typography component={'span'} sx={{ textAlign: "center", cursor: "pointer" }}>
               Already have an account?{" "}
               <Link
                 onClick={() => router.push("/auth/login")}

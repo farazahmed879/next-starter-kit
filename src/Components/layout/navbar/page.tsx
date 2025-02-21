@@ -7,6 +7,7 @@ import { alpha } from "@mui/material/styles";
 import SearchIcon from "@mui/icons-material/Search";
 import InputBase from "@mui/material/InputBase";
 import { signOut } from "next-auth/react";
+import Notification from "@/Components/Notification";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -91,7 +92,6 @@ const Navbar: React.FC<NavbarProps> = ({
   };
 
   const handleLogout = () => {
-    console.log("logout")
     signOut();
   };
 
@@ -116,16 +116,18 @@ const Navbar: React.FC<NavbarProps> = ({
             Admin Panel
           </Typography>
         </div>
-        <div style={{ display: "flex" }}>
+        <div style={{ display: "flex", alignItems: 'center', gap: 5 }}>
           <Search>
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
+
             <StyledInputBase
               placeholder="Search…"
               inputProps={{ "aria-label": "search" }}
             />
           </Search>
+          <Notification />
           <AccountMenu handleLogout={handleLogout} />
         </div>
       </Toolbar>

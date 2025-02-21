@@ -11,6 +11,7 @@ import Settings from "@mui/icons-material/Settings";
 import Logout from "@mui/icons-material/Logout";
 import { useSession, signOut } from "next-auth/react";
 import { jwtDecode } from "jwt-decode";
+import { avatar } from "@/helper/constant";
 
 export default function AccountMenu({
   handleLogout,
@@ -29,9 +30,6 @@ export default function AccountMenu({
   };
 
   const decodedToken: any = jwtDecode<{ role: string }>(session?.user?.token);
-  // console.log("User details:", decodedToken);
-
-  // console.log("session", session);
 
   return (
     <React.Fragment>
@@ -45,7 +43,7 @@ export default function AccountMenu({
             aria-haspopup="true"
             aria-expanded={open ? "true" : undefined}
           >
-            <Avatar sx={{ width: 32, height: 32 }}>P</Avatar>
+            <Avatar sx={{ width: 32, height: 32 }} src={avatar} />
           </IconButton>
         </Tooltip>
       </Box>
@@ -87,7 +85,7 @@ export default function AccountMenu({
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
         <MenuItem onClick={() => handleClose()}>
-          <Avatar />{" "}
+          <Avatar src={avatar}/>{" "}
           <div>
             {decodedToken?.email}
             <br />

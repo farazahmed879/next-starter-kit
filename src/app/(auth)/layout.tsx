@@ -12,7 +12,7 @@ import { Box, Button, Skeleton, Typography } from "@mui/material";
 import Link from "next/link";
 import Navbar from "@/Components/layout/navbar/page";
 import Layout from "@/Components/layout/page";
-import Redirecting from "@/app/redirecting";
+import { ChatContextProvider } from "@/context/ChatContext";
 
 const NAVIGATION: Navigation = [
   {
@@ -59,8 +59,6 @@ const demoTheme = extendTheme({
 // function useDemoRouter(initialPath: string): Router {
 //   const [pathname, setPathname] = React.useState(initialPath);
 
-//   console.log(pathname);
-
 //   const router = React.useMemo(() => {
 //     return {
 //       pathname,
@@ -83,7 +81,9 @@ function DemoPageContent({ pathname }: { pathname: string }) {
         textAlign: "center",
       }}
     >
-      <Typography component="span">Dashboard content for {pathname}</Typography>
+      <Typography component={"span"}>
+        Dashboard content for {pathname}
+      </Typography>
     </Box>
   );
 }
@@ -94,19 +94,15 @@ interface DecodedToken {
   role: string;
 }
 const DashboardLayoutBasic = ({ children }: { children: React.ReactNode }) => {
-  // const { window, children } = props;
   const router1 = useRouter();
   // const session = await getServerSession(options);
-  const { data: session, status: sessionStatus } = useSession();
+  const { data: session, status: sessionStatus, update } = useSession();
 
   // Decode the token safely
   let decodedToken;
   if (session) {
     decodedToken = jwtDecode<DecodedToken>(session?.user.token);
-    // console.log("Decoded token from layout",decodedToken);
   }
-
-  // console.log("session from layout", session);
 
   React.useEffect(() => {
     if (sessionStatus === "unauthenticated") {
@@ -118,29 +114,35 @@ const DashboardLayoutBasic = ({ children }: { children: React.ReactNode }) => {
     return <>..Loading</>;
   }
 
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     update(); // extend client session
+  //     // TODO request token refresh from server
+  //   }, 1000 * 60 * 60)
+  //   return () => clearInterval(interval)
+  // }, [update]); 
+
   // const logout = () => {
   //   signOut();
   // };
-  // console.log(sessionStatus)
 
   return (
     <>
-      <div>
-        {sessionStatus === "authenticated" ? (
-          <>
-            {/* <nav>
+      {sessionStatus === "authenticated" ? (
+        <>
+          {/* <nav>
               <button onClick={logout}>Logout</button>
             </nav>
             {children} */}
-            {/* <MiniDrawer /> */}
+          {/* <MiniDrawer /> */}
+          <ChatContextProvider user={decodedToken}>
             <Layout>{children}</Layout>
-          </>
-        ) : (
-          <Link href={"/auth/login"}>
-            <Redirecting />
-          </Link>
-        )}
-      </div>
+          </ChatContextProvider>
+        </>
+      ) : (
+        <Link href={"/auth/login"}>Please Login...</Link>
+        // <Layout>{children}</Layout>
+      )}
     </>
   );
 };

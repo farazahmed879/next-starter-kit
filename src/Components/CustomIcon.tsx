@@ -8,6 +8,7 @@ interface IconProps extends SvgIconProps {
 
 export default function CustomIcon({
   name,
+  
   hover = false,
   ...props
 }: IconProps) {
@@ -32,6 +33,7 @@ export default function CustomIcon({
       onMouseLeave={handleMouseLeave}
       style={{
         transition: "transform 0.3s ease",
+        cursor: "pointer" 
       }}
     />
   ) : null;
